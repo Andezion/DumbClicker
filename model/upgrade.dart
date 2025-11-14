@@ -12,6 +12,7 @@ class Upgrade {
   final double basePrice;
   final String effect;
   final UpgradeType type;
+  final String requiredEducationLevel;
 
   Upgrade({
     required this.id,
@@ -21,6 +22,7 @@ class Upgrade {
     required this.basePrice,
     required this.effect,
     required this.type,
+    this.requiredEducationLevel = 'Licencjat',
   });
 
   double getPrice(int level) {
@@ -37,6 +39,7 @@ class Upgrade {
         basePrice: 10,
         effect: '+0.1/click',
         type: UpgradeType.clickBoost,
+        requiredEducationLevel: 'Licencjat',
       ),
       Upgrade(
         id: 'coffee',
@@ -46,6 +49,7 @@ class Upgrade {
         basePrice: 25,
         effect: '+0.05/click',
         type: UpgradeType.clickBoost,
+        requiredEducationLevel: 'Licencjat',
       ),
       Upgrade(
         id: 'friend',
@@ -55,6 +59,7 @@ class Upgrade {
         basePrice: 50,
         effect: '+0.5/sec',
         type: UpgradeType.autoClick,
+        requiredEducationLevel: 'Licencjat',
       ),
       Upgrade(
         id: 'tutor',
@@ -64,6 +69,7 @@ class Upgrade {
         basePrice: 200,
         effect: '+2/sec',
         type: UpgradeType.autoClick,
+        requiredEducationLevel: 'Licencjat',
       ),
       Upgrade(
         id: 'earlyPass',
@@ -73,7 +79,80 @@ class Upgrade {
         basePrice: 500,
         effect: '+10% multi',
         type: UpgradeType.multiplier,
+        requiredEducationLevel: 'Licencjat',
+      ),
+
+      Upgrade(
+        id: 'dissertation',
+        name: 'Praca Magisterska',
+        description: '+5 ECTS/sek',
+        emoji: '📄',
+        basePrice: 1000,
+        effect: '+5/sec',
+        type: UpgradeType.autoClick,
+        requiredEducationLevel: 'Magister',
+      ),
+      Upgrade(
+        id: 'scientificArticle',
+        name: 'Artykuł Naukowy',
+        description: '+0.5 ECTS za klik',
+        emoji: '📰',
+        basePrice: 800,
+        effect: '+0.5/click',
+        type: UpgradeType.clickBoost,
+        requiredEducationLevel: 'Magister',
+      ),
+      Upgrade(
+        id: 'conference',
+        name: 'Konferencja',
+        description: '+20% do wszystkiego',
+        emoji: '🎤',
+        basePrice: 2000,
+        effect: '+20% multi',
+        type: UpgradeType.multiplier,
+        requiredEducationLevel: 'Magister',
+      ),
+
+      Upgrade(
+        id: 'grant',
+        name: 'Grant Naukowy',
+        description: '+10 ECTS/sek',
+        emoji: '💰',
+        basePrice: 5000,
+        effect: '+10/sec',
+        type: UpgradeType.autoClick,
+        requiredEducationLevel: 'Doktorant',
+      ),
+      Upgrade(
+        id: 'laboratory',
+        name: 'Własne Laboratorium',
+        description: '+1 ECTS za klik',
+        emoji: '🔬',
+        basePrice: 4000,
+        effect: '+1/click',
+        type: UpgradeType.clickBoost,
+        requiredEducationLevel: 'Doktorant',
+      ),
+      Upgrade(
+        id: 'publisher',
+        name: 'Wydawnictwo',
+        description: '+30% do wszystkiego',
+        emoji: '📚',
+        basePrice: 10000,
+        effect: '+30% multi',
+        type: UpgradeType.multiplier,
+        requiredEducationLevel: 'Doktorant',
       ),
     ];
+  }
+
+  static List<Upgrade> getUpgradesForLevel(String educationLevel) {
+    final allLevels = ['Licencjat', 'Magister', 'Doktorant', 'Profesor'];
+    final currentIndex = allLevels.indexOf(educationLevel);
+
+    return getAllUpgrades().where((upgrade) {
+      final upgradeIndex = allLevels.indexOf(upgrade.requiredEducationLevel);
+      return upgradeIndex <= currentIndex;
+    }).toList();
   }
 }
