@@ -1,51 +1,159 @@
+// lib/ui/home_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:game_new/ui/upgrade_screen.dart';
 import 'dart:async';
 import '../model/game_state.dart';
 import '../model/upgrade.dart';
+import '../model/random_event.dart';
+import '../model/education_level.dart';
 import '../service/save_service.dart';
-import '../widgets/ects_button.dart';
+import '../service/motivation_service.dart';
+import '../service/event_service.dart';
+import '../widgets/study_room.dart';
+import '../widgets/motivation_bar.dart';
 import '../widgets/upgrade_card.dart';
+import '../widgets/event_popup.dart';
 import '../utils/formatters.dart';
 import 'stats_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   late GameState gameState;
   Timer? autoClickTimer;
   Timer? saveTimer;
   bool isLoading = true;
+  DateTime? appPausedTime;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     loadGameState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      // Приложение свернули - сохраняем время
+      appPausedTime = DateTime.now();
+      SaveService.saveGame(gameState);
+    } else if (state == AppLifecycleState.resumed) {
+      // Приложение восстановили - считаем offline earnings
+      if (appPausedTime != null) {
+        _calculateOfflineEarnings();
+      }
+    }
+  }
+
+  void _calculateOfflineEarnings() {
+    if (appPausedTime == null) return;
+
+    final now = DateTime.now();
+    final secondsOffline = now.difference(appPausedTime!).inSeconds;
+
+    if (secondsOffline > 0 && gameState.ectsPerSecond > 0) {
+      // Ограничиваем максимум 8 часов offline earnings
+      final cappedSeconds = secondsOffline > 28800 ? 28800 : secondsOffline;
+      final offlineEcts = gameState.ectsPerSecond * cappedSeconds;
+
+      setState(() {
+        gameState.ects += offlineEcts;
+      });
+
+      SaveService.saveGame(gameState);
+
+      // Показываем попап с заработком
+      _showOfflineEarningsPopup(offlineEcts, cappedSeconds);
+    }
+
+    appPausedTime = null;
+  }
+
+  void _showOfflineEarningsPopup(double earned, int seconds) {
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF2a2a4e),
+        title: const Row(
+          children: [
+            Text('💰 ', style: TextStyle(fontSize: 40)),
+            Text('Witaj z powrotem!', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Podczas twojej nieobecności zarobiłeś:',
+              style: TextStyle(color: Colors.white70),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            Text(
+              '+${Formatters.formatEcts(earned)} ECTS',
+              style: const TextStyle(
+                color: Colors.amber,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Czas offline: ${hours}h ${minutes}m',
+              style: const TextStyle(color: Colors.white54, fontSize: 14),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            child: const Text('Świetnie! 🎉'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> loadGameState() async {
     gameState = await SaveService.loadGame();
+
+    // Проверяем offline earnings при старте
+    if (gameState.lastMotivationUpdate.isBefore(DateTime.now().subtract(const Duration(minutes: 1)))) {
+      appPausedTime = gameState.lastMotivationUpdate;
+      _calculateOfflineEarnings();
+    }
+
     setState(() {
       isLoading = false;
     });
     startAutoClick();
     startAutoSave();
+    startMotivationDecay();
+    startEventGeneration();
   }
 
   void startAutoClick() {
-    autoClickTimer =
-        Timer.periodic(const Duration(milliseconds: 100), (timer) {
-          if (gameState.ectsPerSecond > 0) {
-            setState(() {
-              gameState.ects += gameState.ectsPerSecond * 0.1;
-            });
-          }
+    autoClickTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (gameState.ectsPerSecond > 0) {
+        setState(() {
+          final motivationMultiplier = MotivationService.getMotivationMultiplier(gameState.motivation);
+          gameState.ects += gameState.ectsPerSecond * 0.1 * motivationMultiplier;
         });
+      }
+    });
   }
 
   void startAutoSave() {
@@ -54,11 +162,51 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void startMotivationDecay() {
+    MotivationService.startMotivationDecay(gameState, (updatedState) {
+      setState(() {
+        gameState = updatedState;
+      });
+      SaveService.saveGame(gameState);
+    });
+  }
+
+  void startEventGeneration() {
+    EventService.startEventGeneration(gameState, (event) {
+      _showEventPopup(event);
+    });
+  }
+
   void onEctsClick() {
     setState(() {
-      gameState.ects += gameState.ectsPerClick;
+      final motivationMultiplier = MotivationService.getMotivationMultiplier(gameState.motivation);
+      gameState.ects += gameState.ectsPerClick * motivationMultiplier;
       gameState.totalEctsEarned++;
+
+      // Battle Pass XP
+      gameState.battlePassXP += 1;
+      _checkBattlePassLevelUp();
     });
+  }
+
+  void _checkBattlePassLevelUp() {
+    final requiredXP = (gameState.battlePassLevel + 1) * 100;
+    if (gameState.battlePassXP >= requiredXP && gameState.battlePassLevel < 10) {
+      setState(() {
+        gameState.battlePassLevel++;
+        _showBattlePassReward();
+      });
+    }
+  }
+
+  void _showBattlePassReward() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('🎉 Battle Pass Level ${gameState.battlePassLevel} Unlocked!'),
+        backgroundColor: Colors.purple,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   void buyUpgrade(Upgrade upgrade) {
@@ -76,6 +224,10 @@ class _HomeScreenState extends State<HomeScreen> {
               gameState.ectsPerClick += 0.1;
             } else if (upgrade.id == 'coffee') {
               gameState.ectsPerClick += 0.05;
+            } else if (upgrade.id == 'scientificArticle') {
+              gameState.ectsPerClick += 0.5;
+            } else if (upgrade.id == 'laboratory') {
+              gameState.ectsPerClick += 1.0;
             }
             break;
           case UpgradeType.autoClick:
@@ -83,6 +235,10 @@ class _HomeScreenState extends State<HomeScreen> {
               gameState.ectsPerSecond += 0.5;
             } else if (upgrade.id == 'tutor') {
               gameState.ectsPerSecond += 2.0;
+            } else if (upgrade.id == 'dissertation') {
+              gameState.ectsPerSecond += 5.0;
+            } else if (upgrade.id == 'grant') {
+              gameState.ectsPerSecond += 10.0;
             }
             break;
           case UpgradeType.multiplier:
@@ -96,45 +252,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void prestige() {
-    if (gameState.ects >= 30) {
+    final requiredEcts = gameState.getRequiredEcts();
+
+    if (gameState.ects >= requiredEcts) {
+      final currentLevel = EducationLevel.getById(gameState.educationLevel);
+      final isLastSemester = gameState.educationSemester >= (currentLevel?.totalSemesters ?? 7);
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: const Color(0xFF2a2a4e),
-          title: const Text('🎓 Następny Semestr?',
-              style: TextStyle(color: Colors.white)),
-          content: const Text(
-            'Chcesz przejść na następny semestr?\n\n+1 Prestige Point\n+10% stały bonus do wszystkiego\n\nALE: stracisz wszystkie ECTS i apgrady!',
-            style: TextStyle(color: Colors.white70),
+          title: Text(
+            isLastSemester ? '🎓 ${_getNextLevelTitle()}?' : '📚 Następny Semestr?',
+            style: const TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            isLastSemester
+                ? 'Gratulacje! Ukończyłeś ${gameState.educationLevel}!\n\nPrzejść na ${EducationLevel.getNextLevel(gameState.educationLevel)}?\n\n+1 Prestige Point\n+10% stały bonus\n\nNowe apgrady odblokowane!'
+                : 'Chcesz przejść na następny semestr?\n\n+1 Prestige Point\n+5% stały bonus\n\nALE: stracisz wszystkie ECTS i apgrady!',
+            style: const TextStyle(color: Colors.white70),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Nie, jeszcze poczekam',
-                  style: TextStyle(color: Colors.grey)),
+              child: const Text('Nie, jeszcze poczekam', style: TextStyle(color: Colors.grey)),
             ),
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  gameState.semester++;
-                  gameState.prestigePoints++;
-                  gameState.ects = 0;
-                  gameState.ectsPerClick =
-                      0.1 * (1 + gameState.prestigePoints * 0.1);
-                  gameState.ectsPerSecond = 0;
-                  gameState.upgrades = {
-                    'laptop': 0,
-                    'coffee': 0,
-                    'friend': 0,
-                    'tutor': 0,
-                    'earlyPass': 0,
-                  };
-                });
-                SaveService.saveGame(gameState);
+                _performPrestige(isLastSemester);
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: const Text('TAK! Zdać sesję! 🎓'),
+              child: Text(isLastSemester ? '🎓 PRZEJDŹ NA WYŻSZY POZIOM!' : 'TAK! Zdać sesję! 🎓'),
             ),
           ],
         ),
@@ -142,10 +291,123 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _performPrestige(bool levelUp) {
+    setState(() {
+      if (levelUp) {
+        gameState.educationLevel = EducationLevel.getNextLevel(gameState.educationLevel);
+        gameState.educationSemester = 1;
+        gameState.semester++;
+      } else {
+        gameState.educationSemester++;
+        gameState.semester++;
+      }
+
+      gameState.prestigePoints++;
+      gameState.ects = 0;
+      gameState.ectsPerClick = 0.1 * (1 + gameState.prestigePoints * 0.1);
+      gameState.ectsPerSecond = 0;
+      gameState.upgrades = Map.fromIterable(
+        gameState.upgrades.keys,
+        value: (_) => 0,
+      );
+
+      gameState.motivation = 100.0;
+    });
+    SaveService.saveGame(gameState);
+  }
+
+  String _getNextLevelTitle() {
+    final nextLevel = EducationLevel.getNextLevel(gameState.educationLevel);
+    return EducationLevel.getById(nextLevel)?.name ?? 'Następny Poziom';
+  }
+
+  void _showEventPopup(RandomEvent event) {
+    final canAfford = gameState.ects >= event.ectsCost;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => EventPopup(
+        event: event,
+        canAfford: canAfford,
+        onAccept: () {
+          EventService.applyEvent(event, gameState);
+          setState(() {});
+          SaveService.saveGame(gameState);
+          Navigator.pop(context);
+        },
+        onDecline: () {
+          if (event.type == EventType.negative && event.motivationChange < 0) {
+            gameState.motivation = (gameState.motivation + event.motivationChange).clamp(0, 100);
+          }
+          setState(() {});
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  void _boostMotivation() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF2a2a4e),
+        title: const Text('☕ Boost Motywacji', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Wybierz sposób na odzyskanie motywacji:\n\n'
+              '1. Obejrzyj reklamę → +20% motywacji\n'
+              '2. Kup "Caffeine Pack" (50 ECTS) → +50% motywacji',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Anuluj'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              MotivationService.restoreMotivation(gameState, 20);
+              setState(() {});
+              SaveService.saveGame(gameState);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('☕ +20% Motywacji!')),
+              );
+            },
+            icon: const Icon(Icons.play_arrow),
+            label: const Text('Reklama'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+          ),
+          ElevatedButton.icon(
+            onPressed: gameState.ects >= 50
+                ? () {
+              setState(() {
+                gameState.ects -= 50;
+                MotivationService.restoreMotivation(gameState, 50);
+              });
+              SaveService.saveGame(gameState);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('☕ +50% Motywacji!')),
+              );
+            }
+                : null,
+            icon: const Icon(Icons.shopping_bag),
+            label: const Text('50 ECTS'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     autoClickTimer?.cancel();
     saveTimer?.cancel();
+    MotivationService.stopMotivationDecay();
+    EventService.stopEventGeneration();
     SaveService.saveGame(gameState);
     super.dispose();
   }
@@ -197,12 +459,19 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildStatsCard(),
               const SizedBox(height: 20),
-              EctsButton(
+              MotivationBar(
+                motivation: gameState.motivation,
+                onBoostTap: _boostMotivation,
+              ),
+              const SizedBox(height: 20),
+              StudyRoom(
+                gameState: gameState,
                 onTap: onEctsClick,
-                currentEcts: gameState.ects,
               ),
               const SizedBox(height: 20),
               _buildProgressBar(),
+              const SizedBox(height: 20),
+              _buildBattlePassProgress(),
               const SizedBox(height: 20),
               _buildQuickUpgrades(),
             ],
@@ -253,8 +522,14 @@ class _HomeScreenState extends State<HomeScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('Semestr ${gameState.semester}',
-                      style: const TextStyle(color: Colors.white70)),
+                  Text(
+                    '${_getEducationEmoji()} ${gameState.educationLevel}',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                  Text(
+                    'Sem ${gameState.educationSemester}/${gameState.getTotalSemestersForLevel()}',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
                   Text('Prestige: ${gameState.prestigePoints}',
                       style: const TextStyle(color: Colors.amber)),
                 ],
@@ -269,7 +544,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Formatters.formatPerClick(gameState.ectsPerClick)),
               _statItem('Per Second',
                   Formatters.formatPerSecond(gameState.ectsPerSecond)),
-              _statItem('Total', '${gameState.totalEctsEarned}'),
+              _statItem('Total', Formatters.formatNumber(gameState.totalEctsEarned.toDouble())),
             ],
           ),
         ],
@@ -290,7 +565,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildProgressBar() {
-    double progress = (gameState.ects / 30).clamp(0.0, 1.0);
+    final requiredEcts = gameState.getRequiredEcts();
+    double progress = (gameState.ects / requiredEcts).clamp(0.0, 1.0);
+
     return Column(
       children: [
         Row(
@@ -298,23 +575,57 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const Text('Postęp do zaliczenia semestru',
                 style: TextStyle(color: Colors.white70)),
-            Text('${Formatters.formatEcts(gameState.ects)}/30 ECTS',
+            Text('${Formatters.formatEcts(gameState.ects)}/$requiredEcts ECTS',
                 style: const TextStyle(color: Colors.white)),
           ],
         ),
         const SizedBox(height: 10),
-        LinearProgressIndicator(
-          value: progress,
-          backgroundColor: Colors.grey.shade800,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.green.shade400),
-          minHeight: 15,
+        Stack(
+          children: [
+            Container(
+              height: 20,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade800,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            FractionallySizedBox(
+              widthFactor: progress,
+              child: Container(
+                height: 20,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.green.shade400, Colors.green.shade600],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            Container(
+              height: 20,
+              alignment: Alignment.center,
+              child: Text(
+                '${(progress * 100).toStringAsFixed(0)}%',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 15),
-        if (gameState.ects >= 30)
+        if (gameState.ects >= requiredEcts)
           ElevatedButton.icon(
             onPressed: prestige,
             icon: const Icon(Icons.school),
-            label: const Text('🎓 ZDAĆ SESJĘ I PRZEJŚĆ DALEJ!'),
+            label: Text(
+              gameState.educationSemester >= gameState.getTotalSemestersForLevel()
+                  ? '🎓 UKOŃCZ ${gameState.educationLevel.toUpperCase()}!'
+                  : '🎓 ZDAĆ SESJĘ I PRZEJŚĆ DALEJ!',
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
@@ -324,8 +635,114 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildBattlePassProgress() {
+    final requiredXP = (gameState.battlePassLevel + 1) * 100;
+    final progress = (gameState.battlePassXP / requiredXP).clamp(0.0, 1.0);
+
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.purple.shade900, Colors.pink.shade900],
+        ),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.purple.withOpacity(0.5), width: 2),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '🎮 Battle Pass',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Level ${gameState.battlePassLevel}/10',
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
+              ),
+              if (!gameState.isPremiumBattlePass)
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        backgroundColor: const Color(0xFF2a2a4e),
+                        title: const Text('👑 Premium Battle Pass',
+                            style: TextStyle(color: Colors.white)),
+                        content: const Text(
+                          'Odblokuj ekskluzywne nagrody!\n\n'
+                              '- x2 nagrody\n'
+                              '- Unikalne skiny\n'
+                              '- Permanent boosty\n\n'
+                              'Cena: \$4.99',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Anuluj'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                gameState.isPremiumBattlePass = true;
+                              });
+                              SaveService.saveGame(gameState);
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.purple),
+                            child: const Text('Kup!'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 8,
+                    ),
+                  ),
+                  child: const Text(
+                    '👑 Premium',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          LinearProgressIndicator(
+            value: progress,
+            backgroundColor: Colors.grey.shade800,
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
+            minHeight: 15,
+          ),
+          const SizedBox(height: 5),
+          Text(
+            '${gameState.battlePassXP}/$requiredXP XP',
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildQuickUpgrades() {
-    final upgrades = Upgrade.getAllUpgrades().take(3).toList();
+    final availableUpgrades = Upgrade.getUpgradesForLevel(gameState.educationLevel);
+    final quickUpgrades = availableUpgrades.take(3).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -357,7 +774,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         const SizedBox(height: 10),
-        ...upgrades.map((upgrade) {
+        ...quickUpgrades.map((upgrade) {
           return UpgradeCard(
             upgrade: upgrade,
             currentLevel: gameState.upgrades[upgrade.id] ?? 0,
@@ -367,5 +784,20 @@ class _HomeScreenState extends State<HomeScreen> {
         }).toList(),
       ],
     );
+  }
+
+  String _getEducationEmoji() {
+    switch (gameState.educationLevel) {
+      case 'Licencjat':
+        return '🎓';
+      case 'Magister':
+        return '📚';
+      case 'Doktorant':
+        return '🔬';
+      case 'Profesor':
+        return '👨‍🏫';
+      default:
+        return '🎓';
+    }
   }
 }
