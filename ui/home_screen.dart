@@ -1,6 +1,5 @@
-// lib/ui/home_screen.dart
-
 import 'package:flutter/material.dart';
+import 'package:game_new/ui/shop_screen.dart';
 import 'package:game_new/ui/upgrade_screen.dart';
 import 'dart:async';
 import '../model/game_state.dart';
@@ -18,7 +17,7 @@ import '../utils/formatters.dart';
 import 'stats_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -43,11 +42,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
 
     if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
-      // Приложение свернули - сохраняем время
       appPausedTime = DateTime.now();
       SaveService.saveGame(gameState);
     } else if (state == AppLifecycleState.resumed) {
-      // Приложение восстановили - считаем offline earnings
       if (appPausedTime != null) {
         _calculateOfflineEarnings();
       }
@@ -61,7 +58,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final secondsOffline = now.difference(appPausedTime!).inSeconds;
 
     if (secondsOffline > 0 && gameState.ectsPerSecond > 0) {
-      // Ограничиваем максимум 8 часов offline earnings
       final cappedSeconds = secondsOffline > 28800 ? 28800 : secondsOffline;
       final offlineEcts = gameState.ectsPerSecond * cappedSeconds;
 
@@ -71,7 +67,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
       SaveService.saveGame(gameState);
 
-      // Показываем попап с заработком
       _showOfflineEarningsPopup(offlineEcts, cappedSeconds);
     }
 
@@ -130,7 +125,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> loadGameState() async {
     gameState = await SaveService.loadGame();
 
-    // Проверяем offline earnings при старте
     if (gameState.lastMotivationUpdate.isBefore(DateTime.now().subtract(const Duration(minutes: 1)))) {
       appPausedTime = gameState.lastMotivationUpdate;
       _calculateOfflineEarnings();
@@ -425,6 +419,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         title: const Text('📚 ECTS Clicker'),
         backgroundColor: const Color(0xFF0f3460),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_bag),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ShopScreen(gameState: gameState),
+                ),
+              ).then((_) => setState(() {}));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.bar_chart),
+            onPressed: () { /* stats */ },
+          ),
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () { /* upgrades */ },
+          ),
           IconButton(
             icon: const Icon(Icons.bar_chart),
             onPressed: () {

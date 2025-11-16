@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'ui/home_screen.dart';
+import 'service/purchase_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await PurchaseService.initialize();
+
   runApp(const ECTSClickerApp());
 }
 
 class ECTSClickerApp extends StatelessWidget {
-  const ECTSClickerApp({Key? key}) : super(key: key);
+  const ECTSClickerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
