@@ -34,7 +34,7 @@ class MotivationBar extends StatelessWidget {
                   const Text(
                     'Motywacja',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Colors.white,
                       fontSize: 14,
                     ),
                   ),

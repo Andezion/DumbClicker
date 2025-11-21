@@ -52,7 +52,7 @@ class UpgradeCard extends StatelessWidget {
                 ),
                 Text(
                   upgrade.description,
-                  style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
                 ),
                 const SizedBox(height: 5),
                 Text(

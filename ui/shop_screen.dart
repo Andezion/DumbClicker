@@ -40,7 +40,7 @@ class _ShopScreenState extends State<ShopScreen> {
           _showSuccessDialog('💰 +1000 ECTS добавлено!');
           break;
         case PurchaseService.removeAdsId:
-        // TODO: Disable ads
+          // TODO: Disable ads
           _showSuccessDialog('🚫 Реклама отключена!');
           break;
       }
@@ -53,8 +53,9 @@ class _ShopScreenState extends State<ShopScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF2a2a4e),
-        title: const Text('✅ Zakup udany!', style: TextStyle(color: Colors.white)),
-        content: Text(message, style: const TextStyle(color: Colors.white70)),
+        title:
+            const Text('✅ Zakup udany!', style: TextStyle(color: Colors.white)),
+        content: Text(message, style: const TextStyle(color: Colors.white)),
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
@@ -102,58 +103,62 @@ class _ShopScreenState extends State<ShopScreen> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          _buildShopItem(
-            emoji: '👑',
-            title: 'Premium Battle Pass',
-            description: 'Odblokuj wszystkie nagrody + x2 boosty',
-            price: PurchaseService.getProductPrice(PurchaseService.premiumBattlePassId),
-            productId: PurchaseService.premiumBattlePassId,
-            isConsumable: false,
-            isPurchased: widget.gameState.isPremiumBattlePass,
-          ),
-          _buildShopItem(
-            emoji: '☕',
-            title: 'Motivation Boost Pack',
-            description: 'Przywróć 100% motywacji natychmiast!',
-            price: PurchaseService.getProductPrice(PurchaseService.motivationBoostId),
-            productId: PurchaseService.motivationBoostId,
-            isConsumable: true,
-          ),
-          _buildShopItem(
-            emoji: '💰',
-            title: 'Mega ECTS Pack',
-            description: '+1000 ECTS natychmiast!',
-            price: PurchaseService.getProductPrice(PurchaseService.megaEctsPackId),
-            productId: PurchaseService.megaEctsPackId,
-            isConsumable: true,
-          ),
-          _buildShopItem(
-            emoji: '🚫',
-            title: 'Usuń Reklamy',
-            description: 'Graj bez reklam na zawsze!',
-            price: PurchaseService.getProductPrice(PurchaseService.removeAdsId),
-            productId: PurchaseService.removeAdsId,
-            isConsumable: false,
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: () async {
-              await PurchaseService.restorePurchases();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('✅ Zakupy przywrócone!')),
-              );
-            },
-            icon: const Icon(Icons.refresh),
-            label: const Text('Przywróć zakupy'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueGrey,
-              padding: const EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                _buildShopItem(
+                  emoji: '👑',
+                  title: 'Premium Battle Pass',
+                  description: 'Odblokuj wszystkie nagrody + x2 boosty',
+                  price: PurchaseService.getProductPrice(
+                      PurchaseService.premiumBattlePassId),
+                  productId: PurchaseService.premiumBattlePassId,
+                  isConsumable: false,
+                  isPurchased: widget.gameState.isPremiumBattlePass,
+                ),
+                _buildShopItem(
+                  emoji: '☕',
+                  title: 'Motivation Boost Pack',
+                  description: 'Przywróć 100% motywacji natychmiast!',
+                  price: PurchaseService.getProductPrice(
+                      PurchaseService.motivationBoostId),
+                  productId: PurchaseService.motivationBoostId,
+                  isConsumable: true,
+                ),
+                _buildShopItem(
+                  emoji: '💰',
+                  title: 'Mega ECTS Pack',
+                  description: '+1000 ECTS natychmiast!',
+                  price: PurchaseService.getProductPrice(
+                      PurchaseService.megaEctsPackId),
+                  productId: PurchaseService.megaEctsPackId,
+                  isConsumable: true,
+                ),
+                _buildShopItem(
+                  emoji: '🚫',
+                  title: 'Usuń Reklamy',
+                  description: 'Graj bez reklam na zawsze!',
+                  price: PurchaseService.getProductPrice(
+                      PurchaseService.removeAdsId),
+                  productId: PurchaseService.removeAdsId,
+                  isConsumable: false,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await PurchaseService.restorePurchases();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('✅ Zakupy przywrócone!')),
+                    );
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Przywróć zakupy'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueGrey,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -205,7 +210,7 @@ class _ShopScreenState extends State<ShopScreen> {
                     Text(
                       description,
                       style: const TextStyle(
-                        color: Colors.white70,
+                        color: Colors.white,
                         fontSize: 14,
                       ),
                     ),

@@ -61,7 +61,7 @@ class EventPopup extends StatelessWidget {
             Text(
               event.description,
               style: const TextStyle(
-                color: Colors.white70,
+                color: Colors.white,
                 fontSize: 16,
               ),
               textAlign: TextAlign.center,
@@ -86,7 +86,8 @@ class EventPopup extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: canAfford ? onAccept : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: canAfford ? _getButtonColor() : Colors.grey,
+                      backgroundColor:
+                          canAfford ? _getButtonColor() : Colors.grey,
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
                     child: Text(_getAcceptText()),
@@ -152,7 +153,7 @@ class EventPopup extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
+            style: const TextStyle(color: Colors.white, fontSize: 14),
           ),
           Text(
             value,

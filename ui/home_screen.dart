@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           children: [
             const Text(
               'Podczas twojej nieobecności zarobiłeś:',
-              style: TextStyle(color: Colors.white70),
+              style: TextStyle(color: Colors.white),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
@@ -542,7 +542,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('ECTS Balance',
-                      style: TextStyle(color: Colors.white70, fontSize: 14)),
+                      style: TextStyle(color: Colors.white, fontSize: 14)),
                   Text(
                     Formatters.formatEcts(gameState.ects),
                     style: const TextStyle(
@@ -613,7 +613,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('Postęp do zaliczenia semestru',
-                style: TextStyle(color: Colors.white70)),
+                style: TextStyle(color: Colors.white)),
             Text('${Formatters.formatEcts(gameState.ects)}/$requiredEcts ECTS',
                 style: const TextStyle(color: Colors.white)),
           ],
@@ -706,7 +706,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   Text(
                     'Level ${gameState.battlePassLevel}/10',
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
                   ),
                 ],
               ),
@@ -725,7 +725,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           '- Unikalne skiny\n'
                           '- Permanent boosty\n\n'
                           'Cena: \$4.99',
-                          style: TextStyle(color: Colors.white70),
+                          style: TextStyle(color: Colors.white),
                         ),
                         actions: [
                           TextButton(
@@ -772,7 +772,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           const SizedBox(height: 5),
           Text(
             '${gameState.battlePassXP}/$requiredXP XP',
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
+            style: const TextStyle(color: Colors.white, fontSize: 12),
           ),
         ],
       ),
@@ -868,7 +868,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Text(
                     '${deal.discountPercent}% OFF - ${deal.description}',
                     style: const TextStyle(
-                      color: Colors.white70,
+                      color: Colors.white,
                       fontSize: 12,
                     ),
                   ),
