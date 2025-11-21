@@ -65,15 +65,15 @@ class GameState {
   int getRequiredEcts() {
     switch (educationLevel) {
       case 'Licencjat':
-        return 30;
+        return 150;
       case 'Magister':
-        return 40;
+        return 200;
       case 'Doktorant':
-        return 60;
+        return 300;
       case 'Profesor':
-        return 100;
+        return 500;
       default:
-        return 30;
+        return 150;
     }
   }
 

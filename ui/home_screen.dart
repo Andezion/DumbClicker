@@ -190,11 +190,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       gameState.totalEctsEarned++;
       gameState.totalClicks++;
 
-      int xpGain = 3;
+      int xpGain = 1;
       if (gameState.totalClicks <= 10) {
-        xpGain = 10;
-        _showQuickTip('🎉 Starter Bonus: +10 XP!');
+        xpGain = 3;
+        _showQuickTip('🎉 Starter Bonus: +3 XP!');
       }
+
+      gameState.motivation = (gameState.motivation - 1.0).clamp(0, 100.0);
 
       gameState.battlePassXP += xpGain;
       _checkBattlePassLevelUp();
