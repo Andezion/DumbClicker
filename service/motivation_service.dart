@@ -2,21 +2,28 @@ import 'dart:async';
 import '../model/game_state.dart';
 
 class MotivationService {
-  static const double motivationDecayPerHour = 2.0;
+  static const double motivationDecayPerHour = 8.0;
   static const double minMotivation = 10.0;
 
   static Timer? _motivationTimer;
 
-  static void startMotivationDecay(GameState gameState, Function(GameState) onUpdate) {
+  static void startMotivationDecay(
+      GameState gameState, Function(GameState) onUpdate) {
     _motivationTimer?.cancel();
 
     _motivationTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
       final now = DateTime.now();
-      final minutesPassed = now.difference(gameState.lastMotivationUpdate).inMinutes;
+      final minutesPassed =
+          now.difference(gameState.lastMotivationUpdate).inMinutes;
 
       if (minutesPassed > 0) {
         final decay = (motivationDecayPerHour / 60) * minutesPassed;
-        gameState.motivation = (gameState.motivation - decay).clamp(minMotivation, 100.0);
+
+        final lowMotivationPenalty = gameState.motivation < 30 ? 1.5 : 1.0;
+        final finalDecay = decay * lowMotivationPenalty;
+
+        gameState.motivation =
+            (gameState.motivation - finalDecay).clamp(minMotivation, 100.0);
         gameState.lastMotivationUpdate = now;
         onUpdate(gameState);
       }

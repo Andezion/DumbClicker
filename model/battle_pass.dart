@@ -29,7 +29,7 @@ enum RewardType {
 
 class BattlePass {
   static const int maxLevel = 10;
-  static const int xpPerLevel = 100;
+  static const int xpPerLevel = 50;
 
   static List<BattlePassReward> getAllRewards() {
     return [
@@ -69,7 +69,6 @@ class BattlePass {
         type: RewardType.motivationBonus,
         value: 10,
       ),
-
       BattlePassReward(
         level: 1,
         name: '+20% All Boost',

@@ -6,6 +6,7 @@ import '../model/game_state.dart';
 import '../model/upgrade.dart';
 import '../model/random_event.dart';
 import '../model/education_level.dart';
+import '../model/daily_deal.dart';
 import '../service/save_service.dart';
 import '../service/motivation_service.dart';
 import '../service/event_service.dart';
@@ -41,7 +42,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
       appPausedTime = DateTime.now();
       SaveService.saveGame(gameState);
     } else if (state == AppLifecycleState.resumed) {
@@ -125,9 +127,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> loadGameState() async {
     gameState = await SaveService.loadGame();
 
-    if (gameState.lastMotivationUpdate.isBefore(DateTime.now().subtract(const Duration(minutes: 1)))) {
+    if (gameState.lastMotivationUpdate
+        .isBefore(DateTime.now().subtract(const Duration(minutes: 1)))) {
       appPausedTime = gameState.lastMotivationUpdate;
       _calculateOfflineEarnings();
+    }
+
+    if (!gameState.hasReceivedStarterBonus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showStarterBonus();
+      });
     }
 
     setState(() {
@@ -143,8 +152,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     autoClickTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (gameState.ectsPerSecond > 0) {
         setState(() {
-          final motivationMultiplier = MotivationService.getMotivationMultiplier(gameState.motivation);
-          gameState.ects += gameState.ectsPerSecond * 0.1 * motivationMultiplier;
+          final motivationMultiplier =
+              MotivationService.getMotivationMultiplier(gameState.motivation);
+          gameState.ects +=
+              gameState.ectsPerSecond * 0.1 * motivationMultiplier;
         });
       }
     });
@@ -173,19 +184,116 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void onEctsClick() {
     setState(() {
-      final motivationMultiplier = MotivationService.getMotivationMultiplier(gameState.motivation);
+      final motivationMultiplier =
+          MotivationService.getMotivationMultiplier(gameState.motivation);
       gameState.ects += gameState.ectsPerClick * motivationMultiplier;
       gameState.totalEctsEarned++;
+      gameState.totalClicks++;
 
-      // Battle Pass XP
-      gameState.battlePassXP += 1;
+      int xpGain = 3;
+      if (gameState.totalClicks <= 10) {
+        xpGain = 10;
+        _showQuickTip('🎉 Starter Bonus: +10 XP!');
+      }
+
+      gameState.battlePassXP += xpGain;
       _checkBattlePassLevelUp();
     });
   }
 
+  void _showQuickTip(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 1),
+        backgroundColor: Colors.green.shade700,
+      ),
+    );
+  }
+
+  void _showStarterBonus() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF2a2a4e),
+        title: const Row(
+          children: [
+            Text('🎓 ', style: TextStyle(fontSize: 40)),
+            Expanded(
+              child: Text(
+                'Witaj w ECTS Clicker!',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Oto twój starter pack:',
+              style: TextStyle(color: Colors.white70, fontSize: 16),
+            ),
+            const SizedBox(height: 15),
+            _starterBonusItem('💰', '+50 ECTS na start'),
+            _starterBonusItem('☕', 'Pierwsza kawa gratis'),
+            _starterBonusItem('⚡', 'x10 XP na pierwsze 10 kliknięć'),
+            _starterBonusItem('🎁', 'Random bonus co 30-90s'),
+            const SizedBox(height: 15),
+            const Text(
+              'Pamiętaj: Motywacja spada co godzinę!\nUtrzymuj ją wysoką, aby zarabiać więcej!',
+              style: TextStyle(
+                color: Colors.orange,
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton.icon(
+            onPressed: () {
+              setState(() {
+                gameState.ects += 50;
+                gameState.hasReceivedStarterBonus = true;
+              });
+              SaveService.saveGame(gameState);
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.check_circle),
+            label: const Text('ZACZYNAMY! 🚀'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _starterBonusItem(String emoji, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 24)),
+          const SizedBox(width: 10),
+          Text(
+            text,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _checkBattlePassLevelUp() {
-    final requiredXP = (gameState.battlePassLevel + 1) * 100;
-    if (gameState.battlePassXP >= requiredXP && gameState.battlePassLevel < 10) {
+    final requiredXP = (gameState.battlePassLevel + 1) * 50;
+    if (gameState.battlePassXP >= requiredXP &&
+        gameState.battlePassLevel < 10) {
       setState(() {
         gameState.battlePassLevel++;
         _showBattlePassReward();
@@ -196,7 +304,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _showBattlePassReward() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('🎉 Battle Pass Level ${gameState.battlePassLevel} Unlocked!'),
+        content:
+            Text('🎉 Battle Pass Level ${gameState.battlePassLevel} Unlocked!'),
         backgroundColor: Colors.purple,
         duration: const Duration(seconds: 3),
       ),
@@ -250,14 +359,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     if (gameState.ects >= requiredEcts) {
       final currentLevel = EducationLevel.getById(gameState.educationLevel);
-      final isLastSemester = gameState.educationSemester >= (currentLevel?.totalSemesters ?? 7);
+      final isLastSemester =
+          gameState.educationSemester >= (currentLevel?.totalSemesters ?? 7);
 
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: const Color(0xFF2a2a4e),
           title: Text(
-            isLastSemester ? '🎓 ${_getNextLevelTitle()}?' : '📚 Następny Semestr?',
+            isLastSemester
+                ? '🎓 ${_getNextLevelTitle()}?'
+                : '📚 Następny Semestr?',
             style: const TextStyle(color: Colors.white),
           ),
           content: Text(
@@ -269,7 +381,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Nie, jeszcze poczekam', style: TextStyle(color: Colors.grey)),
+              child: const Text('Nie, jeszcze poczekam',
+                  style: TextStyle(color: Colors.grey)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -277,7 +390,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: Text(isLastSemester ? '🎓 PRZEJDŹ NA WYŻSZY POZIOM!' : 'TAK! Zdać sesję! 🎓'),
+              child: Text(isLastSemester
+                  ? '🎓 PRZEJDŹ NA WYŻSZY POZIOM!'
+                  : 'TAK! Zdać sesję! 🎓'),
             ),
           ],
         ),
@@ -288,7 +403,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _performPrestige(bool levelUp) {
     setState(() {
       if (levelUp) {
-        gameState.educationLevel = EducationLevel.getNextLevel(gameState.educationLevel);
+        gameState.educationLevel =
+            EducationLevel.getNextLevel(gameState.educationLevel);
         gameState.educationSemester = 1;
         gameState.semester++;
       } else {
@@ -332,7 +448,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         },
         onDecline: () {
           if (event.type == EventType.negative && event.motivationChange < 0) {
-            gameState.motivation = (gameState.motivation + event.motivationChange).clamp(0, 100);
+            gameState.motivation =
+                (gameState.motivation + event.motivationChange).clamp(0, 100);
           }
           setState(() {});
           Navigator.pop(context);
@@ -346,11 +463,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF2a2a4e),
-        title: const Text('☕ Boost Motywacji', style: TextStyle(color: Colors.white)),
+        title: const Text('☕ Boost Motywacji',
+            style: TextStyle(color: Colors.white)),
         content: const Text(
           'Wybierz sposób na odzyskanie motywacji:\n\n'
-              '1. Obejrzyj reklamę → +20% motywacji\n'
-              '2. Kup "Caffeine Pack" (50 ECTS) → +50% motywacji',
+          '1. Obejrzyj reklamę → +20% motywacji\n'
+          '2. Kup "Caffeine Pack" (50 ECTS) → +50% motywacji',
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
@@ -375,16 +493,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ElevatedButton.icon(
             onPressed: gameState.ects >= 50
                 ? () {
-              setState(() {
-                gameState.ects -= 50;
-                MotivationService.restoreMotivation(gameState, 50);
-              });
-              SaveService.saveGame(gameState);
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('☕ +50% Motywacji!')),
-              );
-            }
+                    setState(() {
+                      gameState.ects -= 50;
+                      MotivationService.restoreMotivation(gameState, 50);
+                    });
+                    SaveService.saveGame(gameState);
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('☕ +50% Motywacji!')),
+                    );
+                  }
                 : null,
             icon: const Icon(Icons.shopping_bag),
             label: const Text('50 ECTS'),
@@ -432,11 +550,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
           IconButton(
             icon: const Icon(Icons.bar_chart),
-            onPressed: () { /* stats */ },
+            onPressed: () {/* stats */},
           ),
           IconButton(
             icon: const Icon(Icons.shopping_cart),
-            onPressed: () { /* upgrades */ },
+            onPressed: () {/* upgrades */},
           ),
           IconButton(
             icon: const Icon(Icons.bar_chart),
@@ -485,6 +603,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               _buildProgressBar(),
               const SizedBox(height: 20),
               _buildBattlePassProgress(),
+              const SizedBox(height: 20),
+              _buildDailyDealBanner(),
               const SizedBox(height: 20),
               _buildQuickUpgrades(),
             ],
@@ -557,7 +677,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Formatters.formatPerClick(gameState.ectsPerClick)),
               _statItem('Per Second',
                   Formatters.formatPerSecond(gameState.ectsPerSecond)),
-              _statItem('Total', Formatters.formatNumber(gameState.totalEctsEarned.toDouble())),
+              _statItem(
+                  'Total',
+                  Formatters.formatNumber(
+                      gameState.totalEctsEarned.toDouble())),
             ],
           ),
         ],
@@ -572,7 +695,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             style: const TextStyle(color: Colors.white54, fontSize: 12)),
         Text(value,
             style: const TextStyle(
-                color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -635,7 +760,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             onPressed: prestige,
             icon: const Icon(Icons.school),
             label: Text(
-              gameState.educationSemester >= gameState.getTotalSemestersForLevel()
+              gameState.educationSemester >=
+                      gameState.getTotalSemestersForLevel()
                   ? '🎓 UKOŃCZ ${gameState.educationLevel.toUpperCase()}!'
                   : '🎓 ZDAĆ SESJĘ I PRZEJŚĆ DALEJ!',
             ),
@@ -649,7 +775,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildBattlePassProgress() {
-    final requiredXP = (gameState.battlePassLevel + 1) * 100;
+    final requiredXP = (gameState.battlePassLevel + 1) * 50;
     final progress = (gameState.battlePassXP / requiredXP).clamp(0.0, 1.0);
 
     return Container(
@@ -694,10 +820,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             style: TextStyle(color: Colors.white)),
                         content: const Text(
                           'Odblokuj ekskluzywne nagrody!\n\n'
-                              '- x2 nagrody\n'
-                              '- Unikalne skiny\n'
-                              '- Permanent boosty\n\n'
-                              'Cena: \$4.99',
+                          '- x2 nagrody\n'
+                          '- Unikalne skiny\n'
+                          '- Permanent boosty\n\n'
+                          'Cena: \$4.99',
                           style: TextStyle(color: Colors.white70),
                         ),
                         actions: [
@@ -752,8 +878,236 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
+  Widget _buildDailyDealBanner() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    if (gameState.lastDailyDealCheck == null ||
+        gameState.lastDailyDealCheck!.isBefore(today)) {
+      gameState.hasPurchasedDailyDeal = false;
+      gameState.lastDailyDealCheck = now;
+      SaveService.saveGame(gameState);
+    }
+
+    if (gameState.hasPurchasedDailyDeal) {
+      return const SizedBox.shrink();
+    }
+
+    final deal = DailyDeal.generateDailyDeal(now.day);
+
+    return GestureDetector(
+      onTap: () => _showDailyDealPopup(deal),
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.orange.shade700, Colors.red.shade700],
+          ),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.yellow, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.orange.withOpacity(0.5),
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Text(
+              deal.emoji,
+              style: const TextStyle(fontSize: 40),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Text(
+                        '🔥 DAILY DEAL',
+                        style: TextStyle(
+                          color: Colors.yellow,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          deal.getTimeRemainingString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    deal.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '${deal.discountPercent}% OFF - ${deal.description}',
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showDailyDealPopup(DailyDeal deal) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF2a2a4e),
+        title: Row(
+          children: [
+            Text(deal.emoji, style: const TextStyle(fontSize: 30)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '🔥 DAILY DEAL',
+                    style: TextStyle(color: Colors.orange, fontSize: 14),
+                  ),
+                  Text(
+                    deal.title,
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              deal.description,
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '\$${deal.originalPrice.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: Colors.white54,
+                    fontSize: 20,
+                    decoration: TextDecoration.lineThrough,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  '\$${deal.discountedPrice.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: Colors.green,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                'SAVE ${deal.discountPercent}%!',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.timer, color: Colors.orange, size: 16),
+                const SizedBox(width: 5),
+                Text(
+                  'Wygasa za: ${deal.getTimeRemainingString()}',
+                  style: const TextStyle(color: Colors.orange, fontSize: 12),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Później'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                gameState.hasPurchasedDailyDeal = true;
+              });
+              SaveService.saveGame(gameState);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                      '✅ Deal zakupiony! (demo - bez prawdziwej płatności)'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+            ),
+            child: const Text(
+              'KUP TERAZ! 🔥',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildQuickUpgrades() {
-    final availableUpgrades = Upgrade.getUpgradesForLevel(gameState.educationLevel);
+    final availableUpgrades =
+        Upgrade.getUpgradesForLevel(gameState.educationLevel);
     final quickUpgrades = availableUpgrades.take(3).toList();
 
     return Column(

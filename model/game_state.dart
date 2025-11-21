@@ -16,6 +16,10 @@ class GameState {
   List<String> unlockedSkins;
   String currentSkin;
   DateTime? lastEventTime;
+  int totalClicks;
+  bool hasReceivedStarterBonus;
+  DateTime? lastDailyDealCheck;
+  bool hasPurchasedDailyDeal;
 
   Map<String, int> upgrades;
 
@@ -36,22 +40,27 @@ class GameState {
     List<String>? unlockedSkins,
     this.currentSkin = 'default',
     this.lastEventTime,
+    this.totalClicks = 0,
+    this.hasReceivedStarterBonus = false,
+    this.lastDailyDealCheck,
+    this.hasPurchasedDailyDeal = false,
     Map<String, int>? upgrades,
   })  : lastMotivationUpdate = lastMotivationUpdate ?? DateTime.now(),
         unlockedSkins = unlockedSkins ?? ['default'],
-        upgrades = upgrades ?? {
-          'laptop': 0,
-          'coffee': 0,
-          'friend': 0,
-          'tutor': 0,
-          'earlyPass': 0,
-          'dissertation': 0,
-          'scientificArticle': 0,
-          'conference': 0,
-          'grant': 0,
-          'laboratory': 0,
-          'publisher': 0,
-        };
+        upgrades = upgrades ??
+            {
+              'laptop': 0,
+              'coffee': 0,
+              'friend': 0,
+              'tutor': 0,
+              'earlyPass': 0,
+              'dissertation': 0,
+              'scientificArticle': 0,
+              'conference': 0,
+              'grant': 0,
+              'laboratory': 0,
+              'publisher': 0,
+            };
 
   int getRequiredEcts() {
     switch (educationLevel) {
@@ -84,24 +93,28 @@ class GameState {
   }
 
   Map<String, dynamic> toJson() => {
-    'ects': ects,
-    'ectsPerClick': ectsPerClick,
-    'ectsPerSecond': ectsPerSecond,
-    'semester': semester,
-    'totalEctsEarned': totalEctsEarned,
-    'prestigePoints': prestigePoints,
-    'educationLevel': educationLevel,
-    'educationSemester': educationSemester,
-    'motivation': motivation,
-    'lastMotivationUpdate': lastMotivationUpdate.toIso8601String(),
-    'battlePassLevel': battlePassLevel,
-    'battlePassXP': battlePassXP,
-    'isPremiumBattlePass': isPremiumBattlePass,
-    'unlockedSkins': unlockedSkins,
-    'currentSkin': currentSkin,
-    'lastEventTime': lastEventTime?.toIso8601String(),
-    'upgrades': upgrades,
-  };
+        'ects': ects,
+        'ectsPerClick': ectsPerClick,
+        'ectsPerSecond': ectsPerSecond,
+        'semester': semester,
+        'totalEctsEarned': totalEctsEarned,
+        'prestigePoints': prestigePoints,
+        'educationLevel': educationLevel,
+        'educationSemester': educationSemester,
+        'motivation': motivation,
+        'lastMotivationUpdate': lastMotivationUpdate.toIso8601String(),
+        'battlePassLevel': battlePassLevel,
+        'battlePassXP': battlePassXP,
+        'isPremiumBattlePass': isPremiumBattlePass,
+        'unlockedSkins': unlockedSkins,
+        'currentSkin': currentSkin,
+        'lastEventTime': lastEventTime?.toIso8601String(),
+        'totalClicks': totalClicks,
+        'hasReceivedStarterBonus': hasReceivedStarterBonus,
+        'lastDailyDealCheck': lastDailyDealCheck?.toIso8601String(),
+        'hasPurchasedDailyDeal': hasPurchasedDailyDeal,
+        'upgrades': upgrades,
+      };
 
   factory GameState.fromJson(Map<String, dynamic> json) {
     return GameState(
@@ -125,19 +138,26 @@ class GameState {
       lastEventTime: json['lastEventTime'] != null
           ? DateTime.parse(json['lastEventTime'])
           : null,
-      upgrades: Map<String, int>.from(json['upgrades'] ?? {
-        'laptop': 0,
-        'coffee': 0,
-        'friend': 0,
-        'tutor': 0,
-        'earlyPass': 0,
-        'dissertation': 0,
-        'scientificArticle': 0,
-        'conference': 0,
-        'grant': 0,
-        'laboratory': 0,
-        'publisher': 0,
-      }),
+      totalClicks: json['totalClicks'] ?? 0,
+      hasReceivedStarterBonus: json['hasReceivedStarterBonus'] ?? false,
+      lastDailyDealCheck: json['lastDailyDealCheck'] != null
+          ? DateTime.parse(json['lastDailyDealCheck'])
+          : null,
+      hasPurchasedDailyDeal: json['hasPurchasedDailyDeal'] ?? false,
+      upgrades: Map<String, int>.from(json['upgrades'] ??
+          {
+            'laptop': 0,
+            'coffee': 0,
+            'friend': 0,
+            'tutor': 0,
+            'earlyPass': 0,
+            'dissertation': 0,
+            'scientificArticle': 0,
+            'conference': 0,
+            'grant': 0,
+            'laboratory': 0,
+            'publisher': 0,
+          }),
     );
   }
 }
