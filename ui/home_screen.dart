@@ -133,12 +133,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _calculateOfflineEarnings();
     }
 
-    if (!gameState.hasReceivedStarterBonus) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showStarterBonus();
-      });
-    }
-
     setState(() {
       isLoading = false;
     });
@@ -190,106 +184,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       gameState.totalEctsEarned++;
       gameState.totalClicks++;
 
-      int xpGain = 1;
-      if (gameState.totalClicks <= 10) {
-        xpGain = 3;
-        _showQuickTip('🎉 Starter Bonus: +3 XP!');
-      }
-
+      // Each click costs 1 motivation
       gameState.motivation = (gameState.motivation - 1.0).clamp(0, 100.0);
 
-      gameState.battlePassXP += xpGain;
-      _checkBattlePassLevelUp();
+      // Battle Pass XP - slower progression
+      // Only every 3rd click gives XP and only if motivation > 0
+      if (gameState.motivation > 0 && gameState.totalClicks % 3 == 0) {
+        gameState.battlePassXP += 1; // Every 3rd click gives 1 XP
+        _checkBattlePassLevelUp();
+      }
     });
-  }
-
-  void _showQuickTip(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 1),
-        backgroundColor: Colors.green.shade700,
-      ),
-    );
-  }
-
-  void _showStarterBonus() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2a2a4e),
-        title: const Row(
-          children: [
-            Text('🎓 ', style: TextStyle(fontSize: 40)),
-            Expanded(
-              child: Text(
-                'Witaj w ECTS Clicker!',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Oto twój starter pack:',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-            const SizedBox(height: 15),
-            _starterBonusItem('💰', '+50 ECTS na start'),
-            _starterBonusItem('☕', 'Pierwsza kawa gratis'),
-            _starterBonusItem('⚡', 'x10 XP na pierwsze 10 kliknięć'),
-            _starterBonusItem('🎁', 'Random bonus co 30-90s'),
-            const SizedBox(height: 15),
-            const Text(
-              'Pamiętaj: Motywacja spada co godzinę!\nUtrzymuj ją wysoką, aby zarabiać więcej!',
-              style: TextStyle(
-                color: Colors.orange,
-                fontSize: 13,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          ElevatedButton.icon(
-            onPressed: () {
-              setState(() {
-                gameState.ects += 50;
-                gameState.hasReceivedStarterBonus = true;
-              });
-              SaveService.saveGame(gameState);
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.check_circle),
-            label: const Text('ZACZYNAMY! 🚀'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _starterBonusItem(String emoji, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 24)),
-          const SizedBox(width: 10),
-          Text(
-            text,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-          ),
-        ],
-      ),
-    );
   }
 
   void _checkBattlePassLevelUp() {
@@ -541,6 +445,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_bag),
+            tooltip: 'Shop',
             onPressed: () {
               Navigator.push(
                 context,
@@ -552,14 +457,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
           IconButton(
             icon: const Icon(Icons.bar_chart),
-            onPressed: () {/* stats */},
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () {/* upgrades */},
-          ),
-          IconButton(
-            icon: const Icon(Icons.bar_chart),
+            tooltip: 'Stats',
             onPressed: () {
               Navigator.push(
                 context,
@@ -571,6 +469,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
           IconButton(
             icon: const Icon(Icons.shopping_cart),
+            tooltip: 'Upgrades',
             onPressed: () {
               Navigator.push(
                 context,
