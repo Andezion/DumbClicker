@@ -9,12 +9,12 @@ class UpgradeCard extends StatelessWidget {
   final VoidCallback onBuy;
 
   const UpgradeCard({
-    Key? key,
+    super.key,
     required this.upgrade,
     required this.currentLevel,
     required this.currentEcts,
     required this.onBuy,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

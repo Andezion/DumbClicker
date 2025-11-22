@@ -486,7 +486,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 80.0),
           child: Column(
             children: [
               _buildStatsCard(),
@@ -1049,7 +1049,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             currentEcts: gameState.ects,
             onBuy: () => buyUpgrade(upgrade),
           );
-        }).toList(),
+        }),
       ],
     );
   }

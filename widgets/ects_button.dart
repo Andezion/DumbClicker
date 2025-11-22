@@ -5,10 +5,10 @@ class EctsButton extends StatefulWidget {
   final double currentEcts;
 
   const EctsButton({
-    Key? key,
+    super.key,
     required this.onTap,
     required this.currentEcts,
-  }) : super(key: key);
+  });
 
   @override
   State<EctsButton> createState() => _EctsButtonState();

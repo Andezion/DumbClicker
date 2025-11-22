@@ -26,7 +26,7 @@ class UpgradesScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF0f3460),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 80.0),
         children: [
           Container(
             padding: const EdgeInsets.all(15),
@@ -71,7 +71,7 @@ class UpgradesScreen extends StatelessWidget {
               currentEcts: gameState.ects,
               onBuy: () => onUpgradeBuy(upgrade),
             );
-          }).toList(),
+          }),
           const SizedBox(height: 20),
           if (gameState.educationLevel != 'Profesor')
             Container(

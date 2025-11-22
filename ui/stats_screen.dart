@@ -15,7 +15,7 @@ class StatsScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF0f3460),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 80.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -116,9 +116,8 @@ class StatsScreen extends StatelessWidget {
   }
 
   Widget _buildUpgradesStats() {
-    final purchasedUpgrades = gameState.upgrades.entries
-        .where((entry) => entry.value > 0)
-        .toList();
+    final purchasedUpgrades =
+        gameState.upgrades.entries.where((entry) => entry.value > 0).toList();
 
     if (purchasedUpgrades.isEmpty) {
       return Container(
@@ -130,7 +129,8 @@ class StatsScreen extends StatelessWidget {
         child: const Center(
           child: Text(
             'Nie kupiłeś jeszcze żadnych apgradów',
-            style: TextStyle(color: Colors.white54, fontStyle: FontStyle.italic),
+            style:
+                TextStyle(color: Colors.white54, fontStyle: FontStyle.italic),
           ),
         ),
       );
@@ -165,7 +165,8 @@ class StatsScreen extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.amber,
                   borderRadius: BorderRadius.circular(15),
