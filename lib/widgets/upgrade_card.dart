@@ -5,21 +5,21 @@ import '../utils/formatters.dart';
 class UpgradeCard extends StatelessWidget {
   final Upgrade upgrade;
   final int currentLevel;
-  final double currentEcts;
+  final double currentCurrency;
   final VoidCallback onBuy;
 
   const UpgradeCard({
     super.key,
     required this.upgrade,
     required this.currentLevel,
-    required this.currentEcts,
+    required this.currentCurrency,
     required this.onBuy,
   });
 
   @override
   Widget build(BuildContext context) {
     final price = upgrade.getPrice(currentLevel);
-    final canAfford = currentEcts >= price;
+    final canAfford = currentCurrency >= price;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
@@ -69,7 +69,7 @@ class UpgradeCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
             child: Text(
-              '${Formatters.formatPrice(price)} ECTS',
+              '${Formatters.formatPrice(price)} tokens',
               style: const TextStyle(fontSize: 14),
             ),
           ),

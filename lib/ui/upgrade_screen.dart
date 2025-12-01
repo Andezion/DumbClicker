@@ -1,5 +1,3 @@
-// lib/ui/upgrades_screen.dart
-
 import 'package:flutter/material.dart';
 import '../model/game_state.dart';
 import '../model/upgrade.dart';
@@ -68,7 +66,7 @@ class UpgradesScreen extends StatelessWidget {
             return UpgradeCard(
               upgrade: upgrade,
               currentLevel: gameState.upgrades[upgrade.id] ?? 0,
-              currentEcts: gameState.ects,
+              currentCurrency: gameState.tokens.toDouble(),
               onBuy: () => onUpgradeBuy(upgrade),
             );
           }),

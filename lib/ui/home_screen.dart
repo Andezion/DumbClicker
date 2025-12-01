@@ -187,13 +187,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       gameState.totalEctsEarned++;
       gameState.totalClicks++;
 
-      // Each click costs 1 motivation
       gameState.motivation = (gameState.motivation - 1.0).clamp(0, 100.0);
 
-      // Battle Pass XP - slower progression
-      // Only every 3rd click gives XP and only if motivation > 0
       if (gameState.motivation > 0 && gameState.totalClicks % 3 == 0) {
-        gameState.battlePassXP += 1; // Every 3rd click gives 1 XP
+        gameState.battlePassXP += 1;
         _checkBattlePassLevelUp();
       }
     });
@@ -225,9 +222,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final currentLevel = gameState.upgrades[upgrade.id] ?? 0;
     final price = upgrade.getPrice(currentLevel);
 
-    if (gameState.ects >= price) {
+    final int cost = price.round();
+    if (gameState.tokens >= cost) {
       setState(() {
-        gameState.ects -= price;
+        gameState.tokens -= cost;
         gameState.upgrades[upgrade.id] = currentLevel + 1;
 
         switch (upgrade.type) {
@@ -310,7 +308,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _performPrestige(bool levelUp) {
-    // Award medals/trophies and small permanent bonuses on prestige
     final previousSemester = gameState.semester;
     setState(() {
       if (levelUp) {
@@ -323,19 +320,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         gameState.semester++;
       }
 
-      // Give a medal for completing a semester
       final medalId = '${gameState.educationLevel}_sem${previousSemester}';
       gameState.medals.add(medalId);
 
-      // Every 3 medals => small permanent tap bonus
       if (gameState.medals.length % 3 == 0) {
-        gameState.tapMultiplier *= 1.01; // +1%
+        gameState.tapMultiplier *= 1.01;
       }
 
-      // If completed whole level, award a trophy and larger bonus
       if (levelUp) {
         gameState.trophies++;
-        gameState.tapMultiplier *= 1.10; // +10%
+        gameState.tapMultiplier *= 1.10;
       }
 
       gameState.prestigePoints++;
@@ -347,10 +341,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         value: (_) => 0,
       );
 
-      // Reset semester exchange counter
       gameState.ectsExchangedThisSemester = 0;
 
-      // Keep motivation unchanged or slightly refill (not full restore)
       gameState.motivation = (gameState.motivation + 20).clamp(0, 100.0);
     });
     SaveService.saveGame(gameState);
@@ -1088,7 +1080,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           return UpgradeCard(
             upgrade: upgrade,
             currentLevel: gameState.upgrades[upgrade.id] ?? 0,
-            currentEcts: gameState.ects,
+            currentCurrency: gameState.tokens.toDouble(),
             onBuy: () => buyUpgrade(upgrade),
           );
         }),
