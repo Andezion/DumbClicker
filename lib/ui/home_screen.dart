@@ -570,10 +570,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('ECTS Balance',
+                  const Text('Tokens Balance',
                       style: TextStyle(color: Colors.white, fontSize: 14)),
                   Text(
-                    Formatters.formatEcts(gameState.ects),
+                    '${gameState.tokens}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
@@ -582,7 +582,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Tokens: ${gameState.tokens}    Tap x${gameState.tapMultiplier.toStringAsFixed(2)}',
+                    'ECTS: ${Formatters.formatEcts(gameState.ects)}    Tap x${gameState.tapMultiplier.toStringAsFixed(2)}',
                     style: const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
