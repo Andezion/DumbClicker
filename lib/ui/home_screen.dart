@@ -8,6 +8,7 @@ import '../model/random_event.dart';
 import '../model/education_level.dart';
 import '../model/daily_deal.dart';
 import '../service/save_service.dart';
+import 'achievements_screen.dart';
 import '../service/motivation_service.dart';
 import '../service/event_service.dart';
 import '../widgets/study_room.dart';
@@ -180,7 +181,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     setState(() {
       final motivationMultiplier =
           MotivationService.getMotivationMultiplier(gameState.motivation);
-      gameState.ects += gameState.ectsPerClick * motivationMultiplier;
+      gameState.ects += gameState.ectsPerClick *
+          motivationMultiplier *
+          gameState.tapMultiplier;
       gameState.totalEctsEarned++;
       gameState.totalClicks++;
 
@@ -307,6 +310,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _performPrestige(bool levelUp) {
+    // Award medals/trophies and small permanent bonuses on prestige
+    final previousSemester = gameState.semester;
     setState(() {
       if (levelUp) {
         gameState.educationLevel =
@@ -318,6 +323,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         gameState.semester++;
       }
 
+      // Give a medal for completing a semester
+      final medalId = '${gameState.educationLevel}_sem${previousSemester}';
+      gameState.medals.add(medalId);
+
+      // Every 3 medals => small permanent tap bonus
+      if (gameState.medals.length % 3 == 0) {
+        gameState.tapMultiplier *= 1.01; // +1%
+      }
+
+      // If completed whole level, award a trophy and larger bonus
+      if (levelUp) {
+        gameState.trophies++;
+        gameState.tapMultiplier *= 1.10; // +10%
+      }
+
       gameState.prestigePoints++;
       gameState.ects = 0;
       gameState.ectsPerClick = 0.1 * (1 + gameState.prestigePoints * 0.1);
@@ -327,7 +347,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         value: (_) => 0,
       );
 
-      gameState.motivation = 100.0;
+      // Reset semester exchange counter
+      gameState.ectsExchangedThisSemester = 0;
+
+      // Keep motivation unchanged or slightly refill (not full restore)
+      gameState.motivation = (gameState.motivation + 20).clamp(0, 100.0);
     });
     SaveService.saveGame(gameState);
   }
@@ -456,6 +480,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             },
           ),
           IconButton(
+            icon: const Icon(Icons.emoji_events),
+            tooltip: 'Achievements',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      AchievementsScreen(gameState: gameState),
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.bar_chart),
             tooltip: 'Stats',
             onPressed: () {
@@ -550,6 +587,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Tokens: ${gameState.tokens}    Tap x${gameState.tapMultiplier.toStringAsFixed(2)}',
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),

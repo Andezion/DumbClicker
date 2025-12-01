@@ -1,3 +1,5 @@
+import 'education_level.dart';
+
 class GameState {
   double ects;
   double ectsPerClick;
@@ -22,6 +24,13 @@ class GameState {
   bool hasPurchasedDailyDeal;
 
   Map<String, int> upgrades;
+  // New fields
+  int tokens;
+  List<String> medals;
+  int trophies;
+  double tapMultiplier;
+  int ectsExchangedThisSemester;
+  int maxEctsFromExchangePerSemester;
 
   GameState({
     this.ects = 0.0,
@@ -45,8 +54,15 @@ class GameState {
     this.lastDailyDealCheck,
     this.hasPurchasedDailyDeal = false,
     Map<String, int>? upgrades,
+    this.tokens = 0,
+    List<String>? medals,
+    this.trophies = 0,
+    this.tapMultiplier = 1.0,
+    this.ectsExchangedThisSemester = 0,
+    this.maxEctsFromExchangePerSemester = 3,
   })  : lastMotivationUpdate = lastMotivationUpdate ?? DateTime.now(),
         unlockedSkins = unlockedSkins ?? ['default'],
+        medals = medals ?? [],
         upgrades = upgrades ??
             {
               'laptop': 0,
@@ -63,18 +79,9 @@ class GameState {
             };
 
   int getRequiredEcts() {
-    switch (educationLevel) {
-      case 'Licencjat':
-        return 150;
-      case 'Magister':
-        return 200;
-      case 'Doktorant':
-        return 300;
-      case 'Profesor':
-        return 500;
-      default:
-        return 150;
-    }
+    final level = EducationLevel.getById(educationLevel);
+    if (level != null) return level.ectsPerSemester;
+    return 30;
   }
 
   int getTotalSemestersForLevel() {
@@ -114,6 +121,12 @@ class GameState {
         'lastDailyDealCheck': lastDailyDealCheck?.toIso8601String(),
         'hasPurchasedDailyDeal': hasPurchasedDailyDeal,
         'upgrades': upgrades,
+        'tokens': tokens,
+        'medals': medals,
+        'trophies': trophies,
+        'tapMultiplier': tapMultiplier,
+        'ectsExchangedThisSemester': ectsExchangedThisSemester,
+        'maxEctsFromExchangePerSemester': maxEctsFromExchangePerSemester,
       };
 
   factory GameState.fromJson(Map<String, dynamic> json) {
@@ -144,6 +157,13 @@ class GameState {
           ? DateTime.parse(json['lastDailyDealCheck'])
           : null,
       hasPurchasedDailyDeal: json['hasPurchasedDailyDeal'] ?? false,
+      medals: List<String>.from(json['medals'] ?? []),
+      tokens: json['tokens'] ?? 0,
+      trophies: json['trophies'] ?? 0,
+      tapMultiplier: (json['tapMultiplier'] ?? 1.0).toDouble(),
+      ectsExchangedThisSemester: json['ectsExchangedThisSemester'] ?? 0,
+      maxEctsFromExchangePerSemester:
+          json['maxEctsFromExchangePerSemester'] ?? 3,
       upgrades: Map<String, int>.from(json['upgrades'] ??
           {
             'laptop': 0,

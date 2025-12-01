@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../service/purchase_service.dart';
 import '../model/game_state.dart';
 import '../service/save_service.dart';
+import 'achievements_screen.dart';
 
 class ShopScreen extends StatefulWidget {
   final GameState gameState;
@@ -32,15 +33,17 @@ class _ShopScreenState extends State<ShopScreen> {
           _showSuccessDialog('👑 Premium Battle Pass активирован!');
           break;
         case PurchaseService.motivationBoostId:
-          widget.gameState.motivation = 100.0;
-          _showSuccessDialog('☕ Motywacja восстановлена на 100%!');
+          widget.gameState.tokens += 50;
+          widget.gameState.motivation =
+              (widget.gameState.motivation + 15).clamp(0, 100.0);
+          _showSuccessDialog('☕ Dostałeś 50 tokens i +15% motywacji (max).');
           break;
         case PurchaseService.megaEctsPackId:
-          widget.gameState.ects += 1000;
-          _showSuccessDialog('💰 +1000 ECTS добавлено!');
+          widget.gameState.tokens += 1000;
+          _showSuccessDialog(
+              '💰 Dostałeś 1000 tokens (wymienialne ograniczenie).');
           break;
         case PurchaseService.removeAdsId:
-          // TODO: Disable ads
           _showSuccessDialog('🚫 Реклама отключена!');
           break;
       }
@@ -93,6 +96,86 @@ class _ShopScreenState extends State<ShopScreen> {
     }
   }
 
+  void _showExchangeDialog() {
+    final maxAllowed = widget.gameState.maxEctsFromExchangePerSemester -
+        widget.gameState.ectsExchangedThisSemester;
+    final affordableByTokens = widget.gameState.tokens ~/ 10;
+    final allowed =
+        (maxAllowed < affordableByTokens) ? maxAllowed : affordableByTokens;
+
+    if (allowed <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text(
+                'Brak dostępnych wymian (brak tokens lub limit osiągnięty).')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF2a2a4e),
+          title: const Text('Wymiana tokens na ECTS',
+              style: TextStyle(color: Colors.white)),
+          content: Text(
+              'Możesz wymienić do $allowed ECTS (10 tokens = 1 ECTS). Masz ${widget.gameState.tokens} tokens.',
+              style: const TextStyle(color: Colors.white70)),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Anuluj')),
+            ElevatedButton(
+              onPressed: () {
+                // exchange 1 ECTS
+                _performExchange(1);
+                Navigator.pop(context);
+              },
+              child: const Text('Wymień 1 ECTS'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _performExchange(allowed);
+                Navigator.pop(context);
+              },
+              child: Text('Wymień $allowed ECTS'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _performExchange(int ectsToExchange) {
+    final cost = ectsToExchange * 10;
+    if (widget.gameState.tokens < cost) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nie masz wystarczająco tokens.')),
+      );
+      return;
+    }
+    final remainingLimit = widget.gameState.maxEctsFromExchangePerSemester -
+        widget.gameState.ectsExchangedThisSemester;
+    final allowed = ectsToExchange.clamp(0, remainingLimit);
+    if (allowed <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Osiągnięto limit wymiany na semestr.')),
+      );
+      return;
+    }
+
+    widget.gameState.tokens -= cost;
+    widget.gameState.ects += allowed;
+    widget.gameState.ectsExchangedThisSemester += allowed;
+    SaveService.saveGame(widget.gameState);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Wymieniono $allowed ECTS.')),
+    );
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,8 +200,9 @@ class _ShopScreenState extends State<ShopScreen> {
                 ),
                 _buildShopItem(
                   emoji: '☕',
-                  title: 'Motivation Boost Pack',
-                  description: 'Przywróć 100% motywacji natychmiast!',
+                  title: 'Energy Pack',
+                  description:
+                      'Daje 50 tokens i przywraca do +15% motywacji (nie 100%).',
                   price: PurchaseService.getProductPrice(
                       PurchaseService.motivationBoostId),
                   productId: PurchaseService.motivationBoostId,
@@ -126,8 +210,9 @@ class _ShopScreenState extends State<ShopScreen> {
                 ),
                 _buildShopItem(
                   emoji: '💰',
-                  title: 'Mega ECTS Pack',
-                  description: '+1000 ECTS natychmiast!',
+                  title: 'Token Bundle',
+                  description:
+                      'Dostań 1000 tokens (można wymienić z ograniczeniem).',
                   price: PurchaseService.getProductPrice(
                       PurchaseService.megaEctsPackId),
                   productId: PurchaseService.megaEctsPackId,
@@ -154,6 +239,33 @@ class _ShopScreenState extends State<ShopScreen> {
                   label: const Text('Przywróć zakupy'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueGrey,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  onPressed: () => _showExchangeDialog(),
+                  icon: const Icon(Icons.swap_horiz),
+                  label: const Text('Wymień tokens → ECTS'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              AchievementsScreen(gameState: widget.gameState)),
+                    );
+                  },
+                  icon: const Icon(Icons.emoji_events),
+                  label: const Text('Achievements'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
                 ),

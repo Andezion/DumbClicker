@@ -46,7 +46,8 @@ class PurchaseService {
   }
 
   static Future<void> _loadProducts() async {
-    final ProductDetailsResponse response = await _iap.queryProductDetails(_productIds);
+    final ProductDetailsResponse response =
+        await _iap.queryProductDetails(_productIds);
 
     if (response.error != null) {
       print('❌ Error loading products: ${response.error}');
@@ -97,14 +98,15 @@ class PurchaseService {
     }
 
     final product = availableProducts.firstWhere(
-          (p) => p.id == productId,
+      (p) => p.id == productId,
       orElse: () => throw Exception('Product not found: $productId'),
     );
 
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
 
     try {
-      final bool success = await _iap.buyNonConsumable(purchaseParam: purchaseParam);
+      final bool success =
+          await _iap.buyNonConsumable(purchaseParam: purchaseParam);
       return success;
     } catch (e) {
       print('❌ Error buying product: $e');
@@ -119,14 +121,15 @@ class PurchaseService {
     }
 
     final product = availableProducts.firstWhere(
-          (p) => p.id == productId,
+      (p) => p.id == productId,
       orElse: () => throw Exception('Product not found: $productId'),
     );
 
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
 
     try {
-      final bool success = await _iap.buyConsumable(purchaseParam: purchaseParam);
+      final bool success =
+          await _iap.buyConsumable(purchaseParam: purchaseParam);
       return success;
     } catch (e) {
       print('❌ Error buying consumable: $e');
@@ -144,8 +147,7 @@ class PurchaseService {
   }
 
   static Future<bool> isPurchased(String productId) async {
-    final purchases = await _iap.restorePurchases();
-
+    await _iap.restorePurchases();
     return false; // TODO: Implement proper check
   }
 
