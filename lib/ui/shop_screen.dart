@@ -99,7 +99,8 @@ class _ShopScreenState extends State<ShopScreen> {
   void _showExchangeDialog() {
     final maxAllowed = widget.gameState.maxEctsFromExchangePerSemester -
         widget.gameState.ectsExchangedThisSemester;
-    final affordableByTokens = widget.gameState.tokens ~/ 100;
+    final rate = widget.gameState.getTokensPerEcts();
+    final affordableByTokens = widget.gameState.tokens ~/ rate;
     final allowed =
         (maxAllowed < affordableByTokens) ? maxAllowed : affordableByTokens;
 
@@ -120,7 +121,7 @@ class _ShopScreenState extends State<ShopScreen> {
           title: const Text('Wymiana tokens na ECTS',
               style: TextStyle(color: Colors.white)),
           content: Text(
-              'Możesz wymienić do $allowed ECTS (100 tokens = 1 ECTS). Masz ${widget.gameState.tokens} tokens.',
+              'Możesz wymienić do $allowed ECTS ($rate tokens = 1 ECTS). Masz ${widget.gameState.tokens} tokens.',
               style: const TextStyle(color: Colors.white70)),
           actions: [
             TextButton(
@@ -128,7 +129,6 @@ class _ShopScreenState extends State<ShopScreen> {
                 child: const Text('Anuluj')),
             ElevatedButton(
               onPressed: () {
-                // exchange 1 ECTS
                 _performExchange(1);
                 Navigator.pop(context);
               },
@@ -148,15 +148,15 @@ class _ShopScreenState extends State<ShopScreen> {
   }
 
   void _performExchange(int ectsToExchange) {
-    // compute how many ECTS we can actually exchange now (limit + affordability)
     final remainingLimit = widget.gameState.maxEctsFromExchangePerSemester -
         widget.gameState.ectsExchangedThisSemester;
-    final affordableByTokens = widget.gameState.tokens ~/ 100;
+    final rate = widget.gameState.getTokensPerEcts();
+    final affordableByTokens = widget.gameState.tokens ~/ rate;
     final allowedByRequest = ectsToExchange;
     final allowed = [remainingLimit, affordableByTokens, allowedByRequest]
         .reduce((a, b) => a < b ? a : b);
 
-    final cost = allowed * 100;
+    final cost = allowed * rate;
     if (widget.gameState.tokens < cost) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Nie masz wystarczająco tokens.')),

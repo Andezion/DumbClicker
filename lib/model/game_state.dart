@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'education_level.dart';
 
 class GameState {
@@ -34,6 +35,8 @@ class GameState {
   int pendingEctsFromExchange;
   double tokensPerClick;
   double tokensPerSecond;
+  int tokensPerEctsBase = 100;
+  double tokensPerEctsGrowthPercent = 0.1;
 
   GameState({
     this.ects = 0.0,
@@ -136,6 +139,8 @@ class GameState {
         'maxEctsFromExchangePerSemester': maxEctsFromExchangePerSemester,
         'tokensPerClick': tokensPerClick,
         'tokensPerSecond': tokensPerSecond,
+        'tokensPerEctsBase': tokensPerEctsBase,
+        'tokensPerEctsGrowthPercent': tokensPerEctsGrowthPercent,
         'pendingEctsFromExchange': pendingEctsFromExchange,
         'tokensFraction': tokensFraction,
       };
@@ -151,7 +156,7 @@ class GameState {
   }
 
   factory GameState.fromJson(Map<String, dynamic> json) {
-    return GameState(
+    final state = GameState(
       ects: (json['ects'] ?? 0.0).toDouble(),
       ectsPerClick: (json['ectsPerClick'] ?? 0.1).toDouble(),
       ectsPerSecond: (json['ectsPerSecond'] ?? 0.0).toDouble(),
@@ -204,5 +209,18 @@ class GameState {
             'publisher': 0,
           }),
     );
+
+    state.tokensPerEctsBase =
+        json['tokensPerEctsBase'] ?? state.tokensPerEctsBase;
+    state.tokensPerEctsGrowthPercent =
+        (json['tokensPerEctsGrowthPercent'] ?? state.tokensPerEctsGrowthPercent)
+            .toDouble();
+    return state;
+  }
+
+  int getTokensPerEcts() {
+    if (semester <= 1) return tokensPerEctsBase;
+    final multiplier = pow(1 + tokensPerEctsGrowthPercent, (semester - 1));
+    return (tokensPerEctsBase * multiplier).ceil();
   }
 }

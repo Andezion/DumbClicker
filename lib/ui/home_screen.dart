@@ -446,6 +446,86 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
+  void _showExchangeDialogHome() {
+    final rate = gameState.getTokensPerEcts();
+    final affordableByTokens = gameState.tokens ~/ rate;
+    final allowed = affordableByTokens;
+
+    if (allowed <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Brak dostępnych wymian (brak tokens).')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF2a2a4e),
+          title: const Text('Wymiana tokens na ECTS',
+              style: TextStyle(color: Colors.white)),
+          content: Text(
+              'Możesz wymienić do $allowed ECTS ($rate tokens = 1 ECTS). Masz ${gameState.tokens} tokens.',
+              style: const TextStyle(color: Colors.white70)),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Anuluj')),
+            ElevatedButton(
+              onPressed: () {
+                _performExchangeHome(1);
+                Navigator.pop(context);
+              },
+              child: const Text('Wymień 1 ECTS'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _performExchangeHome(allowed);
+                Navigator.pop(context);
+              },
+              child: Text('Wymień $allowed ECTS'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _performExchangeHome(int ectsToExchange) {
+    final rate = gameState.getTokensPerEcts();
+    final affordableByTokens = gameState.tokens ~/ rate;
+    final allowedByRequest = ectsToExchange;
+    final allowed =
+        [affordableByTokens, allowedByRequest].reduce((a, b) => a < b ? a : b);
+
+    final cost = allowed * rate;
+    if (gameState.tokens < cost) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nie masz wystarczająco tokens.')),
+      );
+      return;
+    }
+    if (allowed <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Osiągnięto limit wymiany na semestr.')),
+      );
+      return;
+    }
+
+    setState(() {
+      gameState.tokens -= cost;
+      gameState.pendingEctsFromExchange += allowed;
+      gameState.ectsExchangedThisSemester += allowed;
+    });
+    SaveService.saveGame(gameState);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content:
+              Text('Wymieniono $allowed ECTS (przyznane na koniec semestru).')),
+    );
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -539,6 +619,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               StudyRoom(
                 gameState: gameState,
                 onTap: onEctsClick,
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                onPressed: _showExchangeDialogHome,
+                icon: const Icon(Icons.swap_horiz),
+                label: const Text('Wymień tokens → ECTS'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                  minimumSize: const Size.fromHeight(48),
+                ),
               ),
               const SizedBox(height: 20),
               _buildProgressBar(),
