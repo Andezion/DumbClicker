@@ -24,14 +24,16 @@ class GameState {
   bool hasPurchasedDailyDeal;
 
   Map<String, int> upgrades;
-  // New fields
   int tokens;
+  double tokensFraction;
   List<String> medals;
   int trophies;
   double tapMultiplier;
   int ectsExchangedThisSemester;
   int maxEctsFromExchangePerSemester;
   int pendingEctsFromExchange;
+  double tokensPerClick;
+  double tokensPerSecond;
 
   GameState({
     this.ects = 0.0,
@@ -56,12 +58,15 @@ class GameState {
     this.hasPurchasedDailyDeal = false,
     Map<String, int>? upgrades,
     this.tokens = 0,
+    this.tokensFraction = 0.0,
     List<String>? medals,
     this.trophies = 0,
     this.tapMultiplier = 1.0,
     this.ectsExchangedThisSemester = 0,
     this.maxEctsFromExchangePerSemester = 3,
     this.pendingEctsFromExchange = 0,
+    this.tokensPerClick = 0.1,
+    this.tokensPerSecond = 0.0,
   })  : lastMotivationUpdate = lastMotivationUpdate ?? DateTime.now(),
         unlockedSkins = unlockedSkins ?? ['default'],
         medals = medals ?? [],
@@ -129,8 +134,21 @@ class GameState {
         'tapMultiplier': tapMultiplier,
         'ectsExchangedThisSemester': ectsExchangedThisSemester,
         'maxEctsFromExchangePerSemester': maxEctsFromExchangePerSemester,
+        'tokensPerClick': tokensPerClick,
+        'tokensPerSecond': tokensPerSecond,
         'pendingEctsFromExchange': pendingEctsFromExchange,
+        'tokensFraction': tokensFraction,
       };
+
+  void addTokens(double amount) {
+    if (amount <= 0) return;
+    tokensFraction += amount;
+    final int carry = tokensFraction.floor();
+    if (carry > 0) {
+      tokens += carry;
+      tokensFraction -= carry;
+    }
+  }
 
   factory GameState.fromJson(Map<String, dynamic> json) {
     return GameState(
@@ -162,12 +180,15 @@ class GameState {
       hasPurchasedDailyDeal: json['hasPurchasedDailyDeal'] ?? false,
       medals: List<String>.from(json['medals'] ?? []),
       tokens: json['tokens'] ?? 0,
+      tokensFraction: (json['tokensFraction'] ?? 0.0).toDouble(),
       trophies: json['trophies'] ?? 0,
       tapMultiplier: (json['tapMultiplier'] ?? 1.0).toDouble(),
       ectsExchangedThisSemester: json['ectsExchangedThisSemester'] ?? 0,
       maxEctsFromExchangePerSemester:
           json['maxEctsFromExchangePerSemester'] ?? 3,
       pendingEctsFromExchange: json['pendingEctsFromExchange'] ?? 0,
+      tokensPerClick: (json['tokensPerClick'] ?? 0.1).toDouble(),
+      tokensPerSecond: (json['tokensPerSecond'] ?? 0.0).toDouble(),
       upgrades: Map<String, int>.from(json['upgrades'] ??
           {
             'laptop': 0,

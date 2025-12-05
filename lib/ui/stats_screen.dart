@@ -35,13 +35,13 @@ class StatsScreen extends StatelessWidget {
               Colors.blue,
             ),
             _buildStatCard(
-              '👆 ECTS Per Click',
-              Formatters.formatPerClick(gameState.ectsPerClick),
+              '👆 Tokens Per Click',
+              Formatters.formatPerClick(gameState.tokensPerClick),
               Colors.green,
             ),
             _buildStatCard(
-              '⏱️ ECTS Per Second',
-              Formatters.formatPerSecond(gameState.ectsPerSecond),
+              '⏱️ Tokens Per Second',
+              Formatters.formatPerSecond(gameState.tokensPerSecond),
               Colors.orange,
             ),
             _buildStatCard(

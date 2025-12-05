@@ -99,7 +99,7 @@ class _ShopScreenState extends State<ShopScreen> {
   void _showExchangeDialog() {
     final maxAllowed = widget.gameState.maxEctsFromExchangePerSemester -
         widget.gameState.ectsExchangedThisSemester;
-    final affordableByTokens = widget.gameState.tokens ~/ 10;
+    final affordableByTokens = widget.gameState.tokens ~/ 100;
     final allowed =
         (maxAllowed < affordableByTokens) ? maxAllowed : affordableByTokens;
 
@@ -120,7 +120,7 @@ class _ShopScreenState extends State<ShopScreen> {
           title: const Text('Wymiana tokens na ECTS',
               style: TextStyle(color: Colors.white)),
           content: Text(
-              'Możesz wymienić do $allowed ECTS (10 tokens = 1 ECTS). Masz ${widget.gameState.tokens} tokens.',
+              'Możesz wymienić do $allowed ECTS (100 tokens = 1 ECTS). Masz ${widget.gameState.tokens} tokens.',
               style: const TextStyle(color: Colors.white70)),
           actions: [
             TextButton(
@@ -148,16 +148,21 @@ class _ShopScreenState extends State<ShopScreen> {
   }
 
   void _performExchange(int ectsToExchange) {
-    final cost = ectsToExchange * 10;
+    // compute how many ECTS we can actually exchange now (limit + affordability)
+    final remainingLimit = widget.gameState.maxEctsFromExchangePerSemester -
+        widget.gameState.ectsExchangedThisSemester;
+    final affordableByTokens = widget.gameState.tokens ~/ 100;
+    final allowedByRequest = ectsToExchange;
+    final allowed = [remainingLimit, affordableByTokens, allowedByRequest]
+        .reduce((a, b) => a < b ? a : b);
+
+    final cost = allowed * 100;
     if (widget.gameState.tokens < cost) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Nie masz wystarczająco tokens.')),
       );
       return;
     }
-    final remainingLimit = widget.gameState.maxEctsFromExchangePerSemester -
-        widget.gameState.ectsExchangedThisSemester;
-    final allowed = ectsToExchange.clamp(0, remainingLimit);
     if (allowed <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Osiągnięto limit wymiany na semestr.')),

@@ -60,17 +60,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final now = DateTime.now();
     final secondsOffline = now.difference(appPausedTime!).inSeconds;
 
-    if (secondsOffline > 0 && gameState.ectsPerSecond > 0) {
+    if (secondsOffline > 0 && gameState.tokensPerSecond > 0) {
       final cappedSeconds = secondsOffline > 28800 ? 28800 : secondsOffline;
-      final offlineEcts = gameState.ectsPerSecond * cappedSeconds;
+      final offlineTokens = gameState.tokensPerSecond * cappedSeconds;
 
       setState(() {
-        gameState.ects += offlineEcts;
+        gameState.addTokens(offlineTokens);
       });
 
       SaveService.saveGame(gameState);
 
-      _showOfflineEarningsPopup(offlineEcts, cappedSeconds);
+      _showOfflineEarningsPopup(offlineTokens, cappedSeconds);
     }
 
     appPausedTime = null;
@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
             const SizedBox(height: 20),
             Text(
-              '+${Formatters.formatEcts(earned)} ECTS',
+              '+${Formatters.formatNumber(earned)} tokens',
               style: const TextStyle(
                 color: Colors.amber,
                 fontSize: 32,
@@ -145,12 +145,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void startAutoClick() {
     autoClickTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (gameState.ectsPerSecond > 0) {
+      if (gameState.tokensPerSecond > 0) {
         setState(() {
           final motivationMultiplier =
               MotivationService.getMotivationMultiplier(gameState.motivation);
-          gameState.ects +=
-              gameState.ectsPerSecond * 0.1 * motivationMultiplier;
+          gameState.addTokens(
+              gameState.tokensPerSecond * 0.1 * motivationMultiplier);
         });
       }
     });
@@ -178,13 +178,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void onEctsClick() {
+    debugPrint(
+        'onEctsClick called - tokens before: ${gameState.tokens} frac=${gameState.tokensFraction.toStringAsFixed(2)}');
     setState(() {
       final motivationMultiplier =
           MotivationService.getMotivationMultiplier(gameState.motivation);
-      gameState.ects += gameState.ectsPerClick *
+      final gained = gameState.tokensPerClick *
           motivationMultiplier *
           gameState.tapMultiplier;
-      gameState.totalEctsEarned++;
+      gameState.addTokens(gained);
       gameState.totalClicks++;
 
       gameState.motivation = (gameState.motivation - 1.0).clamp(0, 100.0);
@@ -193,6 +195,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         gameState.battlePassXP += 1;
         _checkBattlePassLevelUp();
       }
+
+      debugPrint(
+          'onEctsClick done - tokens after: ${gameState.tokens} frac=${gameState.tokensFraction.toStringAsFixed(2)} gained: ${gained.toStringAsFixed(2)}');
     });
   }
 
@@ -231,29 +236,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         switch (upgrade.type) {
           case UpgradeType.clickBoost:
             if (upgrade.id == 'laptop') {
-              gameState.ectsPerClick += 0.1;
+              gameState.tokensPerClick += 0.1;
             } else if (upgrade.id == 'coffee') {
-              gameState.ectsPerClick += 0.05;
+              gameState.tokensPerClick += 0.05;
             } else if (upgrade.id == 'scientificArticle') {
-              gameState.ectsPerClick += 0.5;
+              gameState.tokensPerClick += 0.5;
             } else if (upgrade.id == 'laboratory') {
-              gameState.ectsPerClick += 1.0;
+              gameState.tokensPerClick += 1.0;
             }
             break;
           case UpgradeType.autoClick:
             if (upgrade.id == 'friend') {
-              gameState.ectsPerSecond += 0.5;
+              gameState.tokensPerSecond += 0.5;
             } else if (upgrade.id == 'tutor') {
-              gameState.ectsPerSecond += 2.0;
+              gameState.tokensPerSecond += 2.0;
             } else if (upgrade.id == 'dissertation') {
-              gameState.ectsPerSecond += 5.0;
+              gameState.tokensPerSecond += 5.0;
             } else if (upgrade.id == 'grant') {
-              gameState.ectsPerSecond += 10.0;
+              gameState.tokensPerSecond += 10.0;
             }
             break;
           case UpgradeType.multiplier:
-            gameState.ectsPerClick *= 1.1;
-            gameState.ectsPerSecond *= 1.1;
+            gameState.tokensPerClick *= 1.1;
+            gameState.tokensPerSecond *= 1.1;
             break;
         }
       });
@@ -347,6 +352,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       );
 
       gameState.ectsExchangedThisSemester = 0;
+      gameState.maxEctsFromExchangePerSemester += 1;
 
       gameState.motivation = (gameState.motivation + 20).clamp(0, 100.0);
     });
@@ -614,9 +620,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _statItem('Per Click',
-                  Formatters.formatPerClick(gameState.ectsPerClick)),
+                  Formatters.formatPerClick(gameState.tokensPerClick)),
               _statItem('Per Second',
-                  Formatters.formatPerSecond(gameState.ectsPerSecond)),
+                  Formatters.formatPerSecond(gameState.tokensPerSecond)),
               _statItem(
                   'Total',
                   Formatters.formatNumber(
