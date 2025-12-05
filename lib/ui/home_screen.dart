@@ -333,7 +333,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }
 
       gameState.prestigePoints++;
-      gameState.ects = 0;
+      final pending = gameState.pendingEctsFromExchange;
+      gameState.ects = pending.toDouble();
+      if (pending > 0) {
+        gameState.totalEctsEarned += pending;
+        gameState.pendingEctsFromExchange = 0;
+      }
       gameState.ectsPerClick = 0.1 * (1 + gameState.prestigePoints * 0.1);
       gameState.ectsPerSecond = 0;
       gameState.upgrades = Map.fromIterable(

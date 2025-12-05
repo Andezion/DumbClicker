@@ -31,6 +31,7 @@ class GameState {
   double tapMultiplier;
   int ectsExchangedThisSemester;
   int maxEctsFromExchangePerSemester;
+  int pendingEctsFromExchange;
 
   GameState({
     this.ects = 0.0,
@@ -60,6 +61,7 @@ class GameState {
     this.tapMultiplier = 1.0,
     this.ectsExchangedThisSemester = 0,
     this.maxEctsFromExchangePerSemester = 3,
+    this.pendingEctsFromExchange = 0,
   })  : lastMotivationUpdate = lastMotivationUpdate ?? DateTime.now(),
         unlockedSkins = unlockedSkins ?? ['default'],
         medals = medals ?? [],
@@ -127,6 +129,7 @@ class GameState {
         'tapMultiplier': tapMultiplier,
         'ectsExchangedThisSemester': ectsExchangedThisSemester,
         'maxEctsFromExchangePerSemester': maxEctsFromExchangePerSemester,
+        'pendingEctsFromExchange': pendingEctsFromExchange,
       };
 
   factory GameState.fromJson(Map<String, dynamic> json) {
@@ -164,6 +167,7 @@ class GameState {
       ectsExchangedThisSemester: json['ectsExchangedThisSemester'] ?? 0,
       maxEctsFromExchangePerSemester:
           json['maxEctsFromExchangePerSemester'] ?? 3,
+      pendingEctsFromExchange: json['pendingEctsFromExchange'] ?? 0,
       upgrades: Map<String, int>.from(json['upgrades'] ??
           {
             'laptop': 0,

@@ -166,12 +166,13 @@ class _ShopScreenState extends State<ShopScreen> {
     }
 
     widget.gameState.tokens -= cost;
-    widget.gameState.ects += allowed;
+    widget.gameState.pendingEctsFromExchange += allowed;
     widget.gameState.ectsExchangedThisSemester += allowed;
     SaveService.saveGame(widget.gameState);
-
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Wymieniono $allowed ECTS.')),
+      SnackBar(
+          content:
+              Text('Wymieniono $allowed ECTS (przyznane na koniec semestru).')),
     );
     setState(() {});
   }
