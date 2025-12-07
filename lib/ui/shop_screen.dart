@@ -46,6 +46,31 @@ class _ShopScreenState extends State<ShopScreen> {
         case PurchaseService.removeAdsId:
           _showSuccessDialog('🚫 Реклама отключена!');
           break;
+        case PurchaseService.skinGoldLaptopId:
+          if (!widget.gameState.unlockedSkins
+              .contains(PurchaseService.skinGoldLaptopId)) {
+            widget.gameState.unlockedSkins
+                .add(PurchaseService.skinGoldLaptopId);
+          }
+          widget.gameState.currentSkin = PurchaseService.skinGoldLaptopId;
+          _showSuccessDialog('✨ Odblokowano skórkę: Złoty Laptop!');
+          break;
+        case PurchaseService.skinNeonId:
+          if (!widget.gameState.unlockedSkins
+              .contains(PurchaseService.skinNeonId)) {
+            widget.gameState.unlockedSkins.add(PurchaseService.skinNeonId);
+          }
+          widget.gameState.currentSkin = PurchaseService.skinNeonId;
+          _showSuccessDialog('🌈 Odblokowano skórkę: Neon!');
+          break;
+        case PurchaseService.skinRetroId:
+          if (!widget.gameState.unlockedSkins
+              .contains(PurchaseService.skinRetroId)) {
+            widget.gameState.unlockedSkins.add(PurchaseService.skinRetroId);
+          }
+          widget.gameState.currentSkin = PurchaseService.skinRetroId;
+          _showSuccessDialog('🕹️ Odblokowano skórkę: Retro!');
+          break;
       }
       SaveService.saveGame(widget.gameState);
     });
@@ -232,6 +257,40 @@ class _ShopScreenState extends State<ShopScreen> {
                       PurchaseService.removeAdsId),
                   productId: PurchaseService.removeAdsId,
                   isConsumable: false,
+                ),
+                const SizedBox(height: 12),
+                _buildShopItem(
+                  emoji: '💻',
+                  title: 'Złoty Laptop (skórka)',
+                  description: 'Wygląd: złoty laptop — tylko kosmetyka.',
+                  price: PurchaseService.getProductPrice(
+                      PurchaseService.skinGoldLaptopId),
+                  productId: PurchaseService.skinGoldLaptopId,
+                  isConsumable: false,
+                  isPurchased: widget.gameState.unlockedSkins
+                      .contains(PurchaseService.skinGoldLaptopId),
+                ),
+                _buildShopItem(
+                  emoji: '🌈',
+                  title: 'Neon (skórka)',
+                  description: 'Efekt neonowy — tylko zmiana wyglądu.',
+                  price: PurchaseService.getProductPrice(
+                      PurchaseService.skinNeonId),
+                  productId: PurchaseService.skinNeonId,
+                  isConsumable: false,
+                  isPurchased: widget.gameState.unlockedSkins
+                      .contains(PurchaseService.skinNeonId),
+                ),
+                _buildShopItem(
+                  emoji: '🕹️',
+                  title: 'Retro (skórka)',
+                  description: 'Retro styl — elementy wizualne tylko.',
+                  price: PurchaseService.getProductPrice(
+                      PurchaseService.skinRetroId),
+                  productId: PurchaseService.skinRetroId,
+                  isConsumable: false,
+                  isPurchased: widget.gameState.unlockedSkins
+                      .contains(PurchaseService.skinRetroId),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(

@@ -11,11 +11,18 @@ class PurchaseService {
   static const String megaEctsPackId = 'mega_ects_pack';
   static const String removeAdsId = 'remove_ads';
 
+  static const String skinGoldLaptopId = 'skin_gold_laptop';
+  static const String skinNeonId = 'skin_neon';
+  static const String skinRetroId = 'skin_retro';
+
   static const Set<String> _productIds = {
     premiumBattlePassId,
     motivationBoostId,
     megaEctsPackId,
     removeAdsId,
+    skinGoldLaptopId,
+    skinNeonId,
+    skinRetroId,
   };
 
   static List<ProductDetails> availableProducts = [];
