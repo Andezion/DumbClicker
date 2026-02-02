@@ -78,7 +78,7 @@ class EventPopup extends StatelessWidget {
                       backgroundColor: Colors.grey.shade700,
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
-                    child: const Text('Odrzuć',
+                    child: const Text('Decline',
                         style: TextStyle(color: Colors.white)),
                   ),
                 ),
@@ -101,7 +101,7 @@ class EventPopup extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.only(top: 10),
                 child: Text(
-                  '❌ Nie stać cię na to!',
+                  'You can\'t afford this!',
                   style: TextStyle(
                     color: Colors.redAccent,
                     fontSize: 14,
@@ -126,19 +126,19 @@ class EventPopup extends StatelessWidget {
         children: [
           if (event.ectsCost != 0)
             _detailRow(
-              event.ectsCost > 0 ? '💸 Koszt' : '💰 Nagroda',
+              event.ectsCost > 0 ? 'Cost' : 'Reward',
               '${event.ectsCost > 0 ? '-' : '+'}${event.ectsCost.abs().toStringAsFixed(0)} ECTS',
               event.ectsCost > 0 ? Colors.red : Colors.green,
             ),
           if (event.motivationChange != 0)
             _detailRow(
-              event.motivationChange > 0 ? '📈 Motywacja' : '📉 Motywacja',
+              event.motivationChange > 0 ? 'Motivation' : 'Motivation',
               '${event.motivationChange > 0 ? '+' : ''}${event.motivationChange.toStringAsFixed(0)}%',
               event.motivationChange > 0 ? Colors.green : Colors.orange,
             ),
           if (event.duration != null)
             _detailRow(
-              '⏱️ Czas trwania',
+              'Duration',
               '${event.duration!.inMinutes} min',
               Colors.blue,
             ),
@@ -206,11 +206,11 @@ class EventPopup extends StatelessWidget {
   String _getAcceptText() {
     switch (event.type) {
       case EventType.positive:
-        return 'Przyjmij 🎉';
+        return 'Accept';
       case EventType.negative:
-        return 'Zapłać 💸';
+        return 'Pay';
       case EventType.neutral:
-        return 'Idę! 🎉';
+        return 'Go!';
     }
   }
 }
