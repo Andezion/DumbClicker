@@ -87,14 +87,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         title: const Row(
           children: [
             Text('💰 ', style: TextStyle(fontSize: 40)),
-            Text('Witaj z powrotem!', style: TextStyle(color: Colors.white)),
+            Text('Welcome back!', style: TextStyle(color: Colors.white)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'Podczas twojej nieobecności zarobiłeś:',
+              'During your absence, you earned:',
               style: TextStyle(color: Colors.white),
               textAlign: TextAlign.center,
             ),
@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
             const SizedBox(height: 10),
             Text(
-              'Czas offline: ${hours}h ${minutes}m',
+              'Offline Time: ${hours}h ${minutes}m',
               style: const TextStyle(color: Colors.white54, fontSize: 14),
             ),
           ],
@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text('Świetnie!'),
+            child: const Text('Great!'),
           ),
         ],
       ),
@@ -287,19 +287,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         builder: (context) => AlertDialog(
           backgroundColor: const Color(0xFF2a2a4e),
           title: Text(
-            isLastSemester ? '${_getNextLevelTitle()}?' : 'Następny Semestr?',
+            isLastSemester ? '${_getNextLevelTitle()}?' : 'Next Semester?',
             style: const TextStyle(color: Colors.white),
           ),
           content: Text(
             isLastSemester
-                ? 'Gratulacje! Ukończyłeś ${gameState.educationLevel}!\n\nPrzejść na ${EducationLevel.getNextLevel(gameState.educationLevel)}?\n\n+1 Prestige Point\n+10% stały bonus\n\nNowe apgrady odblokowane!'
-                : 'Chcesz przejść na następny semestr?\n\n+1 Prestige Point\n+5% stały bonus\n\nALE: stracisz wszystkie ECTS i apgrady!',
+                ? 'Congratulations! You completed ${gameState.educationLevel}!\n\nProceed to ${EducationLevel.getNextLevel(gameState.educationLevel)}?\n\n+1 Prestige Point\n+10% permanent bonus\n\nNew upgrades unlocked!'
+                : 'Do you want to proceed to the next semester?\n\n+1 Prestige Point\n+5% permanent bonus\n\nBUT: you will lose all ECTS and upgrades!',
             style: const TextStyle(color: Colors.white70),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Nie, jeszcze poczekam',
+              child: const Text('No, I will wait',
                   style: TextStyle(color: Colors.grey)),
             ),
             ElevatedButton(
@@ -308,9 +308,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: Text(isLastSemester
-                  ? 'PRZEJDŹ NA WYŻSZY POZIOM!'
-                  : 'TAK! Zdać sesję!'),
+              child: Text(
+                  isLastSemester ? 'LEVEL UP!' : 'YES! Pass the semester!'),
             ),
           ],
         ),
@@ -367,7 +366,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   String _getNextLevelTitle() {
     final nextLevel = EducationLevel.getNextLevel(gameState.educationLevel);
-    return EducationLevel.getById(nextLevel)?.name ?? 'Następny Poziom';
+    return EducationLevel.getById(nextLevel)?.name ?? 'Next Level';
   }
 
   void _showEventPopup(RandomEvent event) {
@@ -402,18 +401,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF2a2a4e),
-        title: const Text('Boost Motywacji',
+        title: const Text('Boost Motivation',
             style: TextStyle(color: Colors.white)),
         content: const Text(
-          'Wybierz sposób na odzyskanie motywacji:\n\n'
-          '1. Obejrzyj reklamę → +20% motywacji\n'
-          '2. Kup "Caffeine Pack" (50 ECTS) → +50% motywacji',
+          'Choose a way to restore motivation:\n\n'
+          '1. Watch an ad → +20% motivation\n'
+          '2. Buy "Caffeine Pack" (50 ECTS) → +50% motivation',
           style: TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Anuluj'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton.icon(
             onPressed: () {
@@ -422,11 +421,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               SaveService.saveGame(gameState);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('+20% Motywacji!')),
+                const SnackBar(content: Text('+20% Motivation!')),
               );
             },
             icon: const Icon(Icons.play_arrow),
-            label: const Text('Reklama'),
+            label: const Text('Ad'),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
           ),
           ElevatedButton.icon(
@@ -439,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     SaveService.saveGame(gameState);
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('+50% Motywacji!')),
+                      const SnackBar(content: Text('+50% Motivation!')),
                     );
                   }
                 : null,
@@ -459,7 +458,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     if (allowed <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Brak dostępnych wymian (brak tokens).')),
+        const SnackBar(content: Text('No exchanges available (no tokens).')),
       );
       return;
     }
@@ -469,28 +468,28 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       builder: (context) {
         return AlertDialog(
           backgroundColor: const Color(0xFF2a2a4e),
-          title: const Text('Wymiana tokens na ECTS',
+          title: const Text('Exchange tokens for ECTS',
               style: TextStyle(color: Colors.white)),
           content: Text(
-              'Możesz wymienić do $allowed ECTS ($rate tokens = 1 ECTS). Masz ${gameState.tokens} tokens.',
+              'You can exchange up to $allowed ECTS ($rate tokens = 1 ECTS). You have ${gameState.tokens} tokens.',
               style: const TextStyle(color: Colors.white70)),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Anuluj')),
+                child: const Text('Cancel')),
             ElevatedButton(
               onPressed: () {
                 _performExchangeHome(1);
                 Navigator.pop(context);
               },
-              child: const Text('Wymień 1 ECTS'),
+              child: const Text('Exchange 1 ECTS'),
             ),
             ElevatedButton(
               onPressed: () {
                 _performExchangeHome(allowed);
                 Navigator.pop(context);
               },
-              child: Text('Wymień $allowed ECTS'),
+              child: Text('Exchange $allowed ECTS'),
             ),
           ],
         );
@@ -508,13 +507,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final cost = allowed * rate;
     if (gameState.tokens < cost) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nie masz wystarczająco tokens.')),
+        const SnackBar(content: Text('You do not have enough tokens.')),
       );
       return;
     }
     if (allowed <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Osiągnięto limit wymiany na semestr.')),
+        const SnackBar(
+            content: Text('Exchange limit reached for the semester.')),
       );
       return;
     }
@@ -527,8 +527,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     SaveService.saveGame(gameState);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content:
-              Text('Wymieniono $allowed ECTS (przyznane na koniec semestru).')),
+          content: Text(
+              'Exchanged $allowed ECTS (awarded at the end of the semester).')),
     );
   }
 
@@ -630,7 +630,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ElevatedButton.icon(
                 onPressed: _showExchangeDialogHome,
                 icon: const Icon(Icons.swap_horiz),
-                label: const Text('Wymień tokens → ECTS'),
+                label: const Text('Change tokens → ECTS'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
                   padding:
@@ -1108,7 +1108,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 const Icon(Icons.timer, color: Colors.orange, size: 16),
                 const SizedBox(width: 5),
                 Text(
-                  'Wygasa za: ${deal.getTimeRemainingString()}',
+                  'Expires in: ${deal.getTimeRemainingString()}',
                   style: const TextStyle(color: Colors.orange, fontSize: 12),
                 ),
               ],
