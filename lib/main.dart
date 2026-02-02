@@ -16,7 +16,7 @@ class ECTSClickerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ECTS Clicker',
+      title: 'EClicker',
       theme: ThemeData(
         primarySwatch: Colors.indigo,
         scaffoldBackgroundColor: const Color(0xFF1a1a2e),
