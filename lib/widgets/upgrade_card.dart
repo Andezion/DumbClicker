@@ -56,7 +56,7 @@ class UpgradeCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  'Poziom: $currentLevel | ${upgrade.effect}',
+                  'Level: $currentLevel | ${upgrade.effect}',
                   style: const TextStyle(color: Colors.amber, fontSize: 12),
                 ),
               ],
