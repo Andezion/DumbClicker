@@ -43,10 +43,10 @@ class MotivationService {
   }
 
   static String getMotivationStatus(double motivation) {
-    if (motivation >= 80) return '😊 Świetna forma!';
-    if (motivation >= 60) return '🙂 W porządku';
-    if (motivation >= 40) return '😐 Zmęczony';
-    if (motivation >= 20) return '😞 Depresja';
-    return '💀 Wypalenie';
+    if (motivation >= 80) return 'Świetna forma!';
+    if (motivation >= 60) return 'W porządku';
+    if (motivation >= 40) return 'Zmęczony';
+    if (motivation >= 20) return 'Depresja';
+    return 'Wypalenie';
   }
 }
