@@ -82,7 +82,7 @@ class _ShopScreenState extends State<ShopScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF2a2a4e),
-        title: const Text('✅ Purchase Successful!',
+        title: const Text('Purchase Successful!',
             style: TextStyle(color: Colors.white)),
         content: Text(message, style: const TextStyle(color: Colors.white)),
         actions: [
