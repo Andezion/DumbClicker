@@ -183,9 +183,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     setState(() {
       final motivationMultiplier =
           MotivationService.getMotivationMultiplier(gameState.motivation);
+
+      double clickBoost = 1.0;
+      if (gameState.boostedClicksRemaining > 0) {
+        clickBoost = gameState.clickBoostMultiplier;
+        gameState.boostedClicksRemaining--;
+      }
+
       final gained = gameState.tokensPerClick *
           motivationMultiplier *
-          gameState.tapMultiplier;
+          gameState.tapMultiplier *
+          clickBoost;
       gameState.addTokens(gained);
       gameState.totalClicks++;
 
