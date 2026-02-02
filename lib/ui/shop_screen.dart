@@ -30,21 +30,22 @@ class _ShopScreenState extends State<ShopScreen> {
       switch (productId) {
         case PurchaseService.premiumBattlePassId:
           widget.gameState.isPremiumBattlePass = true;
-          _showSuccessDialog('👑 Premium Battle Pass активирован!');
+          _showSuccessDialog('👑 Premium Battle Pass activated!');
           break;
         case PurchaseService.motivationBoostId:
           widget.gameState.tokens += 50;
           widget.gameState.motivation =
               (widget.gameState.motivation + 15).clamp(0, 100.0);
-          _showSuccessDialog('☕ Dostałeś 50 tokens i +15% motywacji (max).');
+          _showSuccessDialog(
+              '☕ You received 50 tokens and +15% motivation (max).');
           break;
         case PurchaseService.megaEctsPackId:
           widget.gameState.tokens += 1000;
           _showSuccessDialog(
-              '💰 Dostałeś 1000 tokens (wymienialne ograniczenie).');
+              '💰 You received 1000 tokens (exchangeable limit).');
           break;
         case PurchaseService.removeAdsId:
-          _showSuccessDialog('🚫 Реклама отключена!');
+          _showSuccessDialog('🚫 Ads disabled!');
           break;
         case PurchaseService.skinGoldLaptopId:
           if (!widget.gameState.unlockedSkins
@@ -53,7 +54,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 .add(PurchaseService.skinGoldLaptopId);
           }
           widget.gameState.currentSkin = PurchaseService.skinGoldLaptopId;
-          _showSuccessDialog('✨ Odblokowano skórkę: Złoty Laptop!');
+          _showSuccessDialog('✨ Unlocked skin: Gold Laptop!');
           break;
         case PurchaseService.skinNeonId:
           if (!widget.gameState.unlockedSkins
@@ -61,7 +62,7 @@ class _ShopScreenState extends State<ShopScreen> {
             widget.gameState.unlockedSkins.add(PurchaseService.skinNeonId);
           }
           widget.gameState.currentSkin = PurchaseService.skinNeonId;
-          _showSuccessDialog('🌈 Odblokowano skórkę: Neon!');
+          _showSuccessDialog('🌈 Unlocked skin: Neon!');
           break;
         case PurchaseService.skinRetroId:
           if (!widget.gameState.unlockedSkins
@@ -69,7 +70,7 @@ class _ShopScreenState extends State<ShopScreen> {
             widget.gameState.unlockedSkins.add(PurchaseService.skinRetroId);
           }
           widget.gameState.currentSkin = PurchaseService.skinRetroId;
-          _showSuccessDialog('🕹️ Odblokowano skórkę: Retro!');
+          _showSuccessDialog('🕹️ Unlocked skin: Retro!');
           break;
       }
       SaveService.saveGame(widget.gameState);
@@ -81,8 +82,8 @@ class _ShopScreenState extends State<ShopScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF2a2a4e),
-        title:
-            const Text('✅ Zakup udany!', style: TextStyle(color: Colors.white)),
+        title: const Text('✅ Purchase Successful!',
+            style: TextStyle(color: Colors.white)),
         content: Text(message, style: const TextStyle(color: Colors.white)),
         actions: [
           ElevatedButton(
@@ -114,7 +115,7 @@ class _ShopScreenState extends State<ShopScreen> {
     if (!success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('❌ Błąd zakupu. Spróbuj ponownie.'),
+          content: Text('Purchase error. Please try again.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -132,8 +133,8 @@ class _ShopScreenState extends State<ShopScreen> {
     if (allowed <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text(
-                'Brak dostępnych wymian (brak tokens lub limit osiągnięty).')),
+            content:
+                Text('No exchanges available (no tokens or limit reached).')),
       );
       return;
     }
@@ -143,28 +144,28 @@ class _ShopScreenState extends State<ShopScreen> {
       builder: (context) {
         return AlertDialog(
           backgroundColor: const Color(0xFF2a2a4e),
-          title: const Text('Wymiana tokens na ECTS',
+          title: const Text('Exchange tokens for ECTS',
               style: TextStyle(color: Colors.white)),
           content: Text(
-              'Możesz wymienić do $allowed ECTS ($rate tokens = 1 ECTS). Masz ${widget.gameState.tokens} tokens.',
+              'You can exchange up to $allowed ECTS ($rate tokens = 1 ECTS). You have ${widget.gameState.tokens} tokens.',
               style: const TextStyle(color: Colors.white70)),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Anuluj')),
+                child: const Text('Cancel')),
             ElevatedButton(
               onPressed: () {
                 _performExchange(1);
                 Navigator.pop(context);
               },
-              child: const Text('Wymień 1 ECTS'),
+              child: const Text('Exchange 1 ECTS'),
             ),
             ElevatedButton(
               onPressed: () {
                 _performExchange(allowed);
                 Navigator.pop(context);
               },
-              child: Text('Wymień $allowed ECTS'),
+              child: Text('Exchange $allowed ECTS'),
             ),
           ],
         );
@@ -184,13 +185,14 @@ class _ShopScreenState extends State<ShopScreen> {
     final cost = allowed * rate;
     if (widget.gameState.tokens < cost) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nie masz wystarczająco tokens.')),
+        const SnackBar(content: Text('Not enough tokens.')),
       );
       return;
     }
     if (allowed <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Osiągnięto limit wymiany na semestr.')),
+        const SnackBar(
+            content: Text('Exchange limit reached for the semester.')),
       );
       return;
     }
@@ -201,8 +203,8 @@ class _ShopScreenState extends State<ShopScreen> {
     SaveService.saveGame(widget.gameState);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content:
-              Text('Wymieniono $allowed ECTS (przyznane na koniec semestru).')),
+          content: Text(
+              'Exchanged $allowed ECTS (awarded at the end of the semester).')),
     );
     setState(() {});
   }
@@ -211,7 +213,7 @@ class _ShopScreenState extends State<ShopScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('💳 Sklep Premium'),
+        title: const Text('Premium Shop'),
         backgroundColor: const Color(0xFF0f3460),
       ),
       body: isLoading
@@ -222,7 +224,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 _buildShopItem(
                   emoji: '👑',
                   title: 'Premium Battle Pass',
-                  description: 'Odblokuj wszystkie nagrody + x2 boosty',
+                  description: 'Unlock all rewards + x2 boosts',
                   price: PurchaseService.getProductPrice(
                       PurchaseService.premiumBattlePassId),
                   productId: PurchaseService.premiumBattlePassId,
@@ -233,7 +235,7 @@ class _ShopScreenState extends State<ShopScreen> {
                   emoji: '☕',
                   title: 'Energy Pack',
                   description:
-                      'Daje 50 tokens i przywraca do +15% motywacji (nie 100%).',
+                      'Gives 50 tokens and restores up to +15% motivation (not 100%).',
                   price: PurchaseService.getProductPrice(
                       PurchaseService.motivationBoostId),
                   productId: PurchaseService.motivationBoostId,
@@ -243,7 +245,7 @@ class _ShopScreenState extends State<ShopScreen> {
                   emoji: '💰',
                   title: 'Token Bundle',
                   description:
-                      'Dostań 1000 tokens (można wymienić z ograniczeniem).',
+                      'Get 1000 tokens (can be exchanged with limitations).',
                   price: PurchaseService.getProductPrice(
                       PurchaseService.megaEctsPackId),
                   productId: PurchaseService.megaEctsPackId,
@@ -251,8 +253,8 @@ class _ShopScreenState extends State<ShopScreen> {
                 ),
                 _buildShopItem(
                   emoji: '🚫',
-                  title: 'Usuń Reklamy',
-                  description: 'Graj bez reklam na zawsze!',
+                  title: 'Remove Ads',
+                  description: 'Play without ads forever!',
                   price: PurchaseService.getProductPrice(
                       PurchaseService.removeAdsId),
                   productId: PurchaseService.removeAdsId,
@@ -261,8 +263,8 @@ class _ShopScreenState extends State<ShopScreen> {
                 const SizedBox(height: 12),
                 _buildShopItem(
                   emoji: '💻',
-                  title: 'Złoty Laptop (skórka)',
-                  description: 'Wygląd: złoty laptop — tylko kosmetyka.',
+                  title: 'Golden Laptop (skin)',
+                  description: 'Appearance: golden laptop — cosmetic only.',
                   price: PurchaseService.getProductPrice(
                       PurchaseService.skinGoldLaptopId),
                   productId: PurchaseService.skinGoldLaptopId,
@@ -272,8 +274,8 @@ class _ShopScreenState extends State<ShopScreen> {
                 ),
                 _buildShopItem(
                   emoji: '🌈',
-                  title: 'Neon (skórka)',
-                  description: 'Efekt neonowy — tylko zmiana wyglądu.',
+                  title: 'Neon (skin)',
+                  description: 'Neon effect — cosmetic only.',
                   price: PurchaseService.getProductPrice(
                       PurchaseService.skinNeonId),
                   productId: PurchaseService.skinNeonId,
@@ -283,8 +285,8 @@ class _ShopScreenState extends State<ShopScreen> {
                 ),
                 _buildShopItem(
                   emoji: '🕹️',
-                  title: 'Retro (skórka)',
-                  description: 'Retro styl — elementy wizualne tylko.',
+                  title: 'Retro (skin)',
+                  description: 'Retro style — cosmetic only.',
                   price: PurchaseService.getProductPrice(
                       PurchaseService.skinRetroId),
                   productId: PurchaseService.skinRetroId,
@@ -297,11 +299,11 @@ class _ShopScreenState extends State<ShopScreen> {
                   onPressed: () async {
                     await PurchaseService.restorePurchases();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('✅ Zakupy przywrócone!')),
+                      const SnackBar(content: Text('Purchases restored!')),
                     );
                   },
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Przywróć zakupy'),
+                  label: const Text('Restore Purchases'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueGrey,
                     padding: const EdgeInsets.symmetric(vertical: 15),
@@ -311,7 +313,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 ElevatedButton.icon(
                   onPressed: () => _showExchangeDialog(),
                   icon: const Icon(Icons.swap_horiz),
-                  label: const Text('Wymień tokens → ECTS'),
+                  label: const Text('Exchange tokens → ECTS'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
                     padding: const EdgeInsets.symmetric(vertical: 15),
@@ -407,7 +409,7 @@ class _ShopScreenState extends State<ShopScreen> {
               ),
               child: const Center(
                 child: Text(
-                  'Zakupione',
+                  'Purchased',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -426,7 +428,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 ),
               ),
               child: Text(
-                'KUP ZA $price',
+                'BUY FOR $price',
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 18,
