@@ -20,7 +20,7 @@ class UpgradesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛒 Sklep'),
+        title: const Text('Shop'),
         backgroundColor: const Color(0xFF0f3460),
       ),
       body: ListView(
@@ -46,7 +46,7 @@ class UpgradesScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  'Dostępne apgrady: ${availableUpgrades.length}',
+                  'Available upgrades: ${availableUpgrades.length}',
                   style: const TextStyle(color: Colors.white),
                 ),
               ],
@@ -54,7 +54,7 @@ class UpgradesScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Dostępne apgrady',
+            'Available upgrades',
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -84,7 +84,7 @@ class UpgradesScreen extends StatelessWidget {
                   const Icon(Icons.lock, color: Colors.grey, size: 40),
                   const SizedBox(height: 10),
                   Text(
-                    'Ukończ ${gameState.educationLevel} aby odblokować więcej!',
+                    'Finish ${gameState.educationLevel} to unlock more!',
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 16,
