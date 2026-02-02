@@ -32,7 +32,7 @@ class MotivationBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Motywacja',
+                    'Motivation',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -109,7 +109,7 @@ class MotivationBar extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
-                '⚠️ Niska motywacja = ${(motivation.toInt())}% dochodu!',
+                'Low motivation = ${(motivation.toInt())}% income!',
                 style: const TextStyle(
                   color: Colors.redAccent,
                   fontSize: 12,
