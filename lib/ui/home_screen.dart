@@ -700,7 +700,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${_getEducationEmoji()} ${gameState.educationLevel}',
+                    '${gameState.educationLevel}',
                     style: const TextStyle(color: Colors.white70),
                   ),
                   Text(
@@ -755,7 +755,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Postęp do zaliczenia semestru',
+            const Text('Progress to pass the semester',
                 style: TextStyle(color: Colors.white)),
             Text('${Formatters.formatEcts(gameState.ects)}/$requiredEcts ECTS',
                 style: const TextStyle(color: Colors.white)),
@@ -806,8 +806,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             label: Text(
               gameState.educationSemester >=
                       gameState.getTotalSemestersForLevel()
-                  ? 'UKOŃCZ ${gameState.educationLevel.toUpperCase()}!'
-                  : 'ZDAĆ SESJĘ I PRZEJŚĆ DALEJ!',
+                  ? 'FINISH ${gameState.educationLevel.toUpperCase()}!'
+                  : 'PASS THE SEMESTER AND MOVE ON!',
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
@@ -863,17 +863,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         title: const Text('Premium Battle Pass',
                             style: TextStyle(color: Colors.white)),
                         content: const Text(
-                          'Odblokuj ekskluzywne nagrody!\n\n'
-                          '- x2 nagrody\n'
-                          '- Unikalne skiny\n'
-                          '- Permanent boosty\n\n'
-                          'Cena: \$4.99',
+                          'Unlock exclusive rewards!\n\n'
+                          '- x2 rewards\n'
+                          '- Unique skins\n'
+                          '- Permanent boosts\n\n'
+                          'Price: \$4.99',
                           style: TextStyle(color: Colors.white),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text('Anuluj'),
+                            child: const Text('Cancel'),
                           ),
                           ElevatedButton(
                             onPressed: () {
@@ -885,7 +885,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.purple),
-                            child: const Text('Kup!'),
+                            child: const Text('Buy!'),
                           ),
                         ],
                       ),
@@ -1118,7 +1118,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Później'),
+            child: const Text('Later'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1129,8 +1129,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content:
-                      Text('Deal zakupiony! (demo - bez prawdziwej płatności)'),
+                  content: Text('Deal purchased! (demo - no real payment)'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -1140,7 +1139,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
             ),
             child: const Text(
-              'KUP TERAZ!',
+              'BUY NOW!',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -1180,7 +1179,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                 ).then((_) => setState(() {}));
               },
-              child: const Text('Zobacz więcej →'),
+              child: const Text('See more →'),
             ),
           ],
         ),
@@ -1195,20 +1194,5 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         }),
       ],
     );
-  }
-
-  String _getEducationEmoji() {
-    switch (gameState.educationLevel) {
-      case 'Licencjat':
-        return '🎓';
-      case 'Magister':
-        return '📚';
-      case 'Doktorant':
-        return '🔬';
-      case 'Profesor':
-        return '👨‍🏫';
-      default:
-        return '🎓';
-    }
   }
 }
