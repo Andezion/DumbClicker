@@ -37,6 +37,8 @@ class GameState {
   double tokensPerSecond;
   int tokensPerEctsBase = 100;
   double tokensPerEctsGrowthPercent = 0.1;
+  int boostedClicksRemaining;
+  double clickBoostMultiplier;
 
   GameState({
     this.ects = 0.0,
@@ -70,6 +72,8 @@ class GameState {
     this.pendingEctsFromExchange = 0,
     this.tokensPerClick = 0.1,
     this.tokensPerSecond = 0.0,
+    this.boostedClicksRemaining = 0,
+    this.clickBoostMultiplier = 1.0,
   })  : lastMotivationUpdate = lastMotivationUpdate ?? DateTime.now(),
         unlockedSkins = unlockedSkins ?? ['default'],
         medals = medals ?? [],
@@ -143,6 +147,8 @@ class GameState {
         'tokensPerEctsGrowthPercent': tokensPerEctsGrowthPercent,
         'pendingEctsFromExchange': pendingEctsFromExchange,
         'tokensFraction': tokensFraction,
+        'boostedClicksRemaining': boostedClicksRemaining,
+        'clickBoostMultiplier': clickBoostMultiplier,
       };
 
   void addTokens(double amount) {
@@ -194,6 +200,8 @@ class GameState {
       pendingEctsFromExchange: json['pendingEctsFromExchange'] ?? 0,
       tokensPerClick: (json['tokensPerClick'] ?? 0.1).toDouble(),
       tokensPerSecond: (json['tokensPerSecond'] ?? 0.0).toDouble(),
+      boostedClicksRemaining: json['boostedClicksRemaining'] ?? 0,
+      clickBoostMultiplier: (json['clickBoostMultiplier'] ?? 1.0).toDouble(),
       upgrades: Map<String, int>.from(json['upgrades'] ??
           {
             'laptop': 0,
