@@ -11,7 +11,7 @@ class StatsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('📊 Statystyki'),
+        title: const Text('Statistics'),
         backgroundColor: const Color(0xFF0f3460),
       ),
       body: SingleChildScrollView(
@@ -20,43 +20,43 @@ class StatsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildStatCard(
-              '🎓 ${gameState.educationLevel}',
-              'Semestr ${gameState.educationSemester}/${gameState.getTotalSemestersForLevel()}',
+              '${gameState.educationLevel}',
+              'Semester ${gameState.educationSemester}/${gameState.getTotalSemestersForLevel()}',
               Colors.purple,
             ),
             _buildStatCard(
-              '⭐ Prestige Points',
+              'Prestige Points',
               '${gameState.prestigePoints}',
               Colors.amber,
             ),
             _buildStatCard(
-              '📚 Total ECTS Earned',
+              'Total ECTS Earned',
               '${gameState.totalEctsEarned}',
               Colors.blue,
             ),
             _buildStatCard(
-              '👆 Tokens Per Click',
+              'Tokens Per Click',
               Formatters.formatPerClick(gameState.tokensPerClick),
               Colors.green,
             ),
             _buildStatCard(
-              '⏱️ Tokens Per Second',
+              'Tokens Per Second',
               Formatters.formatPerSecond(gameState.tokensPerSecond),
               Colors.orange,
             ),
             _buildStatCard(
-              '😊 Motywacja',
+              'Motivation',
               '${gameState.motivation.toStringAsFixed(1)}%',
               _getMotivationColor(gameState.motivation),
             ),
             _buildStatCard(
-              '🎮 Battle Pass Level',
+              'Battle Pass Level',
               '${gameState.battlePassLevel}/10',
               Colors.purple,
             ),
             const SizedBox(height: 20),
             const Text(
-              '📦 Kupione Apgrady',
+              'Purchased Upgrades',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -68,7 +68,7 @@ class StatsScreen extends StatelessWidget {
             const SizedBox(height: 40),
             Center(
               child: Text(
-                'Keep grinding! 💪',
+                'Keep grinding!',
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.5),
                   fontSize: 16,
@@ -128,7 +128,7 @@ class StatsScreen extends StatelessWidget {
         ),
         child: const Center(
           child: Text(
-            'Nie kupiłeś jeszcze żadnych apgradów',
+            'You haven\'t purchased any upgrades yet',
             style:
                 TextStyle(color: Colors.white54, fontStyle: FontStyle.italic),
           ),
@@ -213,17 +213,17 @@ class StatsScreen extends StatelessWidget {
 
   String _getUpgradeName(String id) {
     const nameMap = {
-      'laptop': 'Nowy Laptop',
-      'coffee': 'Kawa na Noc',
-      'friend': 'Przyjaciel',
-      'tutor': 'Korepetytor',
-      'earlyPass': 'Zaliczenie Wcześniej',
-      'dissertation': 'Praca Magisterska',
-      'scientificArticle': 'Artykuł Naukowy',
-      'conference': 'Konferencja',
-      'grant': 'Grant Naukowy',
-      'laboratory': 'Laboratorium',
-      'publisher': 'Wydawnictwo',
+      'laptop': 'New Laptop',
+      'coffee': 'All-Night Coffee',
+      'friend': 'Friend',
+      'tutor': 'Tutor',
+      'earlyPass': 'Early Pass',
+      'dissertation': 'Master\'s Thesis',
+      'scientificArticle': 'Scientific Article',
+      'conference': 'Conference',
+      'grant': 'Research Grant',
+      'laboratory': 'Laboratory',
+      'publisher': 'Publisher',
     };
     return nameMap[id] ?? id;
   }
