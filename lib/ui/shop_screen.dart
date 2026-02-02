@@ -39,9 +39,9 @@ class _ShopScreenState extends State<ShopScreen> {
           _showSuccessDialog('☕ Dostałeś 50 tokens i +15% motywacji (max).');
           break;
         case PurchaseService.megaEctsPackId:
-          widget.gameState.boostedClicksRemaining += 1000;
-          widget.gameState.clickBoostMultiplier = 2.0;
-          _showSuccessDialog('⚡ Dostałeś 1000 kliknięć z efektem x2!');
+          widget.gameState.tokens += 1000;
+          _showSuccessDialog(
+              '💰 Dostałeś 1000 tokens (wymienialne ograniczenie).');
           break;
         case PurchaseService.removeAdsId:
           _showSuccessDialog('🚫 Реклама отключена!');
@@ -240,9 +240,10 @@ class _ShopScreenState extends State<ShopScreen> {
                   isConsumable: true,
                 ),
                 _buildShopItem(
-                  emoji: '⚡',
-                  title: 'Click Boost Pack',
-                  description: 'Dostań 1000 kliknięć z efektem x2!',
+                  emoji: '💰',
+                  title: 'Token Bundle',
+                  description:
+                      'Dostań 1000 tokens (można wymienić z ograniczeniem).',
                   price: PurchaseService.getProductPrice(
                       PurchaseService.megaEctsPackId),
                   productId: PurchaseService.megaEctsPackId,
@@ -299,9 +300,8 @@ class _ShopScreenState extends State<ShopScreen> {
                       const SnackBar(content: Text('✅ Zakupy przywrócone!')),
                     );
                   },
-                  icon: const Icon(Icons.refresh, color: Colors.white),
-                  label: const Text('Przywróć zakupy',
-                      style: TextStyle(color: Colors.white)),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Przywróć zakupy'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueGrey,
                     padding: const EdgeInsets.symmetric(vertical: 15),
@@ -310,9 +310,8 @@ class _ShopScreenState extends State<ShopScreen> {
                 const SizedBox(height: 12),
                 ElevatedButton.icon(
                   onPressed: () => _showExchangeDialog(),
-                  icon: const Icon(Icons.swap_horiz, color: Colors.white),
-                  label: const Text('Wymień tokens → ECTS',
-                      style: TextStyle(color: Colors.white)),
+                  icon: const Icon(Icons.swap_horiz),
+                  label: const Text('Wymień tokens → ECTS'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
                     padding: const EdgeInsets.symmetric(vertical: 15),
@@ -328,9 +327,8 @@ class _ShopScreenState extends State<ShopScreen> {
                               AchievementsScreen(gameState: widget.gameState)),
                     );
                   },
-                  icon: const Icon(Icons.emoji_events, color: Colors.white),
-                  label: const Text('Achievements',
-                      style: TextStyle(color: Colors.white)),
+                  icon: const Icon(Icons.emoji_events),
+                  label: const Text('Achievements'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
                     padding: const EdgeInsets.symmetric(vertical: 15),
@@ -409,7 +407,7 @@ class _ShopScreenState extends State<ShopScreen> {
               ),
               child: const Center(
                 child: Text(
-                  '✅ Zakupione',
+                  'Zakupione',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
