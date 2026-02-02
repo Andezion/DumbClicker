@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text('Świetnie! 🎉'),
+            child: const Text('Świetnie!'),
           ),
         ],
       ),
@@ -224,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content:
-            Text('🎉 Battle Pass Level ${gameState.battlePassLevel} Unlocked!'),
+            Text('Battle Pass Level ${gameState.battlePassLevel} Unlocked!'),
         backgroundColor: Colors.purple,
         duration: const Duration(seconds: 3),
       ),
@@ -287,9 +287,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         builder: (context) => AlertDialog(
           backgroundColor: const Color(0xFF2a2a4e),
           title: Text(
-            isLastSemester
-                ? '🎓 ${_getNextLevelTitle()}?'
-                : '📚 Następny Semestr?',
+            isLastSemester ? '${_getNextLevelTitle()}?' : 'Następny Semestr?',
             style: const TextStyle(color: Colors.white),
           ),
           content: Text(
@@ -311,8 +309,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
               child: Text(isLastSemester
-                  ? '🎓 PRZEJDŹ NA WYŻSZY POZIOM!'
-                  : 'TAK! Zdać sesję! 🎓'),
+                  ? 'PRZEJDŹ NA WYŻSZY POZIOM!'
+                  : 'TAK! Zdać sesję!'),
             ),
           ],
         ),
@@ -404,7 +402,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF2a2a4e),
-        title: const Text('☕ Boost Motywacji',
+        title: const Text('Boost Motywacji',
             style: TextStyle(color: Colors.white)),
         content: const Text(
           'Wybierz sposób na odzyskanie motywacji:\n\n'
@@ -424,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               SaveService.saveGame(gameState);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('☕ +20% Motywacji!')),
+                const SnackBar(content: Text('+20% Motywacji!')),
               );
             },
             icon: const Icon(Icons.play_arrow),
@@ -441,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     SaveService.saveGame(gameState);
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('☕ +50% Motywacji!')),
+                      const SnackBar(content: Text('+50% Motywacji!')),
                     );
                   }
                 : null,
@@ -555,7 +553,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('📚 ECTS Clicker'),
+        title: const Text('EClicker'),
         backgroundColor: const Color(0xFF0f3460),
         actions: [
           IconButton(
@@ -808,8 +806,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             label: Text(
               gameState.educationSemester >=
                       gameState.getTotalSemestersForLevel()
-                  ? '🎓 UKOŃCZ ${gameState.educationLevel.toUpperCase()}!'
-                  : '🎓 ZDAĆ SESJĘ I PRZEJŚĆ DALEJ!',
+                  ? 'UKOŃCZ ${gameState.educationLevel.toUpperCase()}!'
+                  : 'ZDAĆ SESJĘ I PRZEJŚĆ DALEJ!',
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
@@ -842,7 +840,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    '🎮 Battle Pass',
+                    'Battle Pass',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -862,7 +860,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       context: context,
                       builder: (context) => AlertDialog(
                         backgroundColor: const Color(0xFF2a2a4e),
-                        title: const Text('👑 Premium Battle Pass',
+                        title: const Text('Premium Battle Pass',
                             style: TextStyle(color: Colors.white)),
                         content: const Text(
                           'Odblokuj ekskluzywne nagrody!\n\n'
@@ -901,7 +899,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                   ),
                   child: const Text(
-                    '👑 Premium',
+                    'Premium',
                     style: TextStyle(color: Colors.black),
                   ),
                 ),
@@ -973,7 +971,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Row(
                     children: [
                       const Text(
-                        '🔥 DAILY DEAL',
+                        'DAILY DEAL',
                         style: TextStyle(
                           color: Colors.yellow,
                           fontSize: 12,
@@ -1045,7 +1043,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    '🔥 DAILY DEAL',
+                    'DAILY DEAL',
                     style: TextStyle(color: Colors.orange, fontSize: 14),
                   ),
                   Text(
@@ -1131,8 +1129,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text(
-                      '✅ Deal zakupiony! (demo - bez prawdziwej płatności)'),
+                  content:
+                      Text('Deal zakupiony! (demo - bez prawdziwej płatności)'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -1142,7 +1140,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
             ),
             child: const Text(
-              'KUP TERAZ! 🔥',
+              'KUP TERAZ!',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -1163,7 +1161,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              '⚡ Quick Buy',
+              'Quick Buy',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
