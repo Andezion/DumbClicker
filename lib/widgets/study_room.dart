@@ -42,9 +42,7 @@ class StudyRoom extends StatelessWidget {
                 ),
               ),
             ),
-
             ..._buildPurchasedItems(),
-
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -78,7 +76,7 @@ class StudyRoom extends StatelessWidget {
                       ),
                     ),
                     child: const Text(
-                      '📚 TAP TO STUDY',
+                      'TAP TO STUDY',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -89,8 +87,6 @@ class StudyRoom extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Education level badge
             Positioned(
               top: 15,
               left: 15,
@@ -291,22 +287,22 @@ class _AnimatedItemState extends State<_AnimatedItem>
       children: [
         widget.animated
             ? AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Transform.translate(
-              offset: Offset(0, -5 * _controller.value),
-              child: child,
-            );
-          },
-          child: Text(
-            widget.emoji,
-            style: const TextStyle(fontSize: 40),
-          ),
-        )
+                animation: _controller,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(0, -5 * _controller.value),
+                    child: child,
+                  );
+                },
+                child: Text(
+                  widget.emoji,
+                  style: const TextStyle(fontSize: 40),
+                ),
+              )
             : Text(
-          widget.emoji,
-          style: const TextStyle(fontSize: 40),
-        ),
+                widget.emoji,
+                style: const TextStyle(fontSize: 40),
+              ),
         if (widget.level > 1)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
