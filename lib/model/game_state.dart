@@ -107,7 +107,7 @@ class GameState {
       case 'Doktorant':
         return 4;
       case 'Profesor':
-        return 999; // Endless
+        return 999;
       default:
         return 7;
     }
