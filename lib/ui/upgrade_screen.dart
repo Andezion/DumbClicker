@@ -71,7 +71,7 @@ class UpgradesScreen extends StatelessWidget {
             );
           }),
           const SizedBox(height: 20),
-          if (gameState.educationLevel != 'Profesor')
+          if (gameState.educationLevel != 'Professor')
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -102,13 +102,13 @@ class UpgradesScreen extends StatelessWidget {
 
   String _getEducationEmoji() {
     switch (gameState.educationLevel) {
-      case 'Licencjat':
+      case 'Bachelor':
         return '🎓';
-      case 'Magister':
+      case 'Master':
         return '📚';
-      case 'Doktorant':
+      case 'PhD':
         return '🔬';
-      case 'Profesor':
+      case 'Professor':
         return '👨‍🏫';
       default:
         return '🎓';
