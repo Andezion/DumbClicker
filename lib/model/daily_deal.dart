@@ -63,7 +63,7 @@ class DailyDeal {
     return DailyDeal(
       id: 'ects_bundle_${DateTime.now().day}',
       title: 'Mega ECTS Pack',
-      description: '+${bundle['ects']} ECTS natychmiast!',
+      description: '+${bundle['ects']} ECTS instantly!',
       emoji: '💎',
       type: DealType.ectsBundle,
       originalPrice: bundle['price'] as double,
@@ -79,8 +79,8 @@ class DailyDeal {
 
     return DailyDeal(
       id: 'motivation_boost_${DateTime.now().day}',
-      title: 'Mega Kawa!',
-      description: 'Przywróć 100% motywacji + bonus 30 min bez spadku!',
+      title: 'Mega Coffee!',
+      description: 'Restore 100% motivation + bonus 30 min without drop!',
       emoji: '☕',
       type: DealType.motivationBoost,
       originalPrice: 2.99,
@@ -96,8 +96,8 @@ class DailyDeal {
 
     return DailyDeal(
       id: 'upgrade_discount_${DateTime.now().day}',
-      title: 'Wszystkie Apgrady -${50 + random.nextInt(30)}%',
-      description: 'Wszystkie apgrady tańsze przez 24h!',
+      title: 'All Upgrades -${50 + random.nextInt(30)}%',
+      description: 'All upgrades cheaper for 24h!',
       emoji: '🔥',
       type: DealType.upgradeDiscount,
       originalPrice: 0,
@@ -114,7 +114,7 @@ class DailyDeal {
     return DailyDeal(
       id: 'bp_boost_${DateTime.now().day}',
       title: 'Battle Pass XP x2',
-      description: 'Podwójny XP do Battle Pass przez 24h!',
+      description: 'Double XP to Battle Pass for 24h!',
       emoji: '⚡',
       type: DealType.battlePassBoost,
       originalPrice: 1.99,
@@ -127,7 +127,7 @@ class DailyDeal {
 
   String getTimeRemainingString() {
     final duration = timeRemaining;
-    if (duration.isNegative) return 'Wygasło';
+    if (duration.isNegative) return 'Expired';
 
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
