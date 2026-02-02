@@ -36,7 +36,7 @@ class BattlePass {
       BattlePassReward(
         level: 1,
         name: '+5% Click Boost',
-        description: 'Zwiększ kliki o 5%',
+        description: 'Increase clicks by 5%',
         emoji: '👆',
         isPremium: false,
         type: RewardType.clickBoost,
@@ -45,7 +45,7 @@ class BattlePass {
       BattlePassReward(
         level: 3,
         name: 'Basic Skin',
-        description: 'Odblokuj podstawowy skin',
+        description: 'Unlock basic skin',
         emoji: '🎨',
         isPremium: false,
         type: RewardType.skin,
@@ -54,7 +54,7 @@ class BattlePass {
       BattlePassReward(
         level: 5,
         name: '+10 ECTS',
-        description: 'Darmowe 10 ECTS',
+        description: 'Free 10 ECTS',
         emoji: '💎',
         isPremium: false,
         type: RewardType.ectsBonus,
@@ -63,7 +63,7 @@ class BattlePass {
       BattlePassReward(
         level: 10,
         name: '+10% Motivation',
-        description: 'Permanent +10% do bazowej motywacji',
+        description: 'Permanent +10% to base motivation',
         emoji: '🔥',
         isPremium: false,
         type: RewardType.motivationBonus,
@@ -72,7 +72,7 @@ class BattlePass {
       BattlePassReward(
         level: 1,
         name: '+20% All Boost',
-        description: 'x1.2 do wszystkich dochodów',
+        description: 'x1.2 to all income',
         emoji: '🚀',
         isPremium: true,
         type: RewardType.clickBoost,
@@ -81,7 +81,7 @@ class BattlePass {
       BattlePassReward(
         level: 2,
         name: 'Coffee Unlimited',
-        description: 'Permanent +15% motywacji',
+        description: 'Permanent +15% motivation',
         emoji: '☕',
         isPremium: true,
         type: RewardType.motivationBonus,
@@ -90,7 +90,7 @@ class BattlePass {
       BattlePassReward(
         level: 5,
         name: 'Golden Student Skin',
-        description: 'Ekskluzywny złoty skin',
+        description: 'Exclusive golden skin',
         emoji: '👑',
         isPremium: true,
         type: RewardType.skin,
@@ -99,7 +99,7 @@ class BattlePass {
       BattlePassReward(
         level: 7,
         name: '+100 ECTS',
-        description: 'Ogromny bonus ECTS',
+        description: 'Huge ECTS bonus',
         emoji: '💰',
         isPremium: true,
         type: RewardType.ectsBonus,
@@ -108,7 +108,7 @@ class BattlePass {
       BattlePassReward(
         level: 10,
         name: 'Auto-Prestige',
-        description: 'Automatyczne przejście na następny semestr',
+        description: 'Automatic transition to the next semester',
         emoji: '⚡',
         isPremium: true,
         type: RewardType.feature,
