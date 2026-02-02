@@ -62,7 +62,7 @@ class DailyDeal {
 
     return DailyDeal(
       id: 'ects_bundle_${DateTime.now().day}',
-      title: '💰 Mega ECTS Pack',
+      title: 'Mega ECTS Pack',
       description: '+${bundle['ects']} ECTS natychmiast!',
       emoji: '💎',
       type: DealType.ectsBundle,
@@ -79,7 +79,7 @@ class DailyDeal {
 
     return DailyDeal(
       id: 'motivation_boost_${DateTime.now().day}',
-      title: '☕ Mega Kawa!',
+      title: 'Mega Kawa!',
       description: 'Przywróć 100% motywacji + bonus 30 min bez spadku!',
       emoji: '☕',
       type: DealType.motivationBoost,
@@ -96,7 +96,7 @@ class DailyDeal {
 
     return DailyDeal(
       id: 'upgrade_discount_${DateTime.now().day}',
-      title: '🎓 Wszystkie Apgrady -${50 + random.nextInt(30)}%',
+      title: 'Wszystkie Apgrady -${50 + random.nextInt(30)}%',
       description: 'Wszystkie apgrady tańsze przez 24h!',
       emoji: '🔥',
       type: DealType.upgradeDiscount,
@@ -113,7 +113,7 @@ class DailyDeal {
 
     return DailyDeal(
       id: 'bp_boost_${DateTime.now().day}',
-      title: '⚡ Battle Pass XP x2',
+      title: 'Battle Pass XP x2',
       description: 'Podwójny XP do Battle Pass przez 24h!',
       emoji: '⚡',
       type: DealType.battlePassBoost,
