@@ -73,7 +73,7 @@ class _EctsButtonState extends State<EctsButton>
                 Text('📚', style: TextStyle(fontSize: 60)),
                 SizedBox(height: 10),
                 Text(
-                  'UCZĘ SIĘ!',
+                  'Study!',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
