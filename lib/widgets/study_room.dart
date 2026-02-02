@@ -226,13 +226,13 @@ class StudyRoom extends StatelessWidget {
 
   String _getEducationEmoji() {
     switch (gameState.educationLevel) {
-      case 'Licencjat':
+      case 'Bachelor':
         return '🎓';
-      case 'Magister':
+      case 'Master':
         return '📚';
-      case 'Doktorant':
+      case 'PhD':
         return '🔬';
-      case 'Profesor':
+      case 'Professor':
         return '👨‍🏫';
       default:
         return '🎓';
