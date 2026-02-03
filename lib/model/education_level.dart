@@ -20,7 +20,7 @@ class EducationLevel {
   static List<EducationLevel> getAllLevels() {
     return [
       EducationLevel(
-        id: 'Licencjat',
+        id: 'Bachelor',
         name: 'Bachelor',
         emoji: '🎓',
         totalSemesters: 7,
@@ -29,7 +29,7 @@ class EducationLevel {
         unlockedUpgrades: ['laptop', 'coffee', 'friend', 'tutor', 'earlyPass'],
       ),
       EducationLevel(
-        id: 'Magister',
+        id: 'Master',
         name: 'Master',
         emoji: '📚',
         totalSemesters: 4,
@@ -38,7 +38,7 @@ class EducationLevel {
         unlockedUpgrades: ['dissertation', 'scientificArticle', 'conference'],
       ),
       EducationLevel(
-        id: 'Doktorant',
+        id: 'PhD',
         name: 'PhD',
         emoji: '🔬',
         totalSemesters: 4,
@@ -47,7 +47,7 @@ class EducationLevel {
         unlockedUpgrades: ['grant', 'laboratory', 'publisher'],
       ),
       EducationLevel(
-        id: 'Profesor',
+        id: 'Professor',
         name: 'Professor',
         emoji: '👨‍🏫',
         totalSemesters: 999,
@@ -68,14 +68,14 @@ class EducationLevel {
 
   static String getNextLevel(String currentLevel) {
     switch (currentLevel) {
-      case 'Licencjat':
-        return 'Magister';
-      case 'Magister':
-        return 'Doktorant';
-      case 'Doktorant':
-        return 'Profesor';
+      case 'Bachelor':
+        return 'Master';
+      case 'Master':
+        return 'PhD';
+      case 'PhD':
+        return 'Professor';
       default:
-        return 'Profesor';
+        return 'Professor';
     }
   }
 }
