@@ -630,7 +630,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ElevatedButton.icon(
                 onPressed: _showExchangeDialogHome,
                 icon: const Icon(Icons.swap_horiz),
-                label: const Text('Change tokens → ECTS'),
+                label: const Text('Change tokens to ECTS'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
                   padding:
@@ -808,6 +808,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       gameState.getTotalSemestersForLevel()
                   ? 'FINISH ${gameState.educationLevel.toUpperCase()}!'
                   : 'PASS THE SEMESTER AND MOVE ON!',
+              style: const TextStyle(color: Colors.white),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
