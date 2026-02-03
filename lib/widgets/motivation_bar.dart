@@ -51,8 +51,8 @@ class MotivationBar extends StatelessWidget {
               if (onBoostTap != null && motivation < 80)
                 ElevatedButton.icon(
                   onPressed: onBoostTap,
-                  icon: const Icon(Icons.local_cafe, size: 16),
-                  label: const Text('Boost'),
+                  label: const Text('Boost',
+                      style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
                     padding: const EdgeInsets.symmetric(
