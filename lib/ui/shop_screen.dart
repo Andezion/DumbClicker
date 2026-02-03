@@ -302,8 +302,9 @@ class _ShopScreenState extends State<ShopScreen> {
                       const SnackBar(content: Text('Purchases restored!')),
                     );
                   },
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Restore Purchases'),
+                  icon: const Icon(Icons.refresh, color: Colors.white),
+                  label: const Text('Restore Purchases',
+                      style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueGrey,
                     padding: const EdgeInsets.symmetric(vertical: 15),
@@ -312,8 +313,9 @@ class _ShopScreenState extends State<ShopScreen> {
                 const SizedBox(height: 12),
                 ElevatedButton.icon(
                   onPressed: () => _showExchangeDialog(),
-                  icon: const Icon(Icons.swap_horiz),
-                  label: const Text('Exchange tokens → ECTS'),
+                  icon: const Icon(Icons.swap_horiz, color: Colors.white),
+                  label: const Text('Exchange tokens for ECTS',
+                      style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepPurple,
                     padding: const EdgeInsets.symmetric(vertical: 15),
@@ -329,8 +331,9 @@ class _ShopScreenState extends State<ShopScreen> {
                               AchievementsScreen(gameState: widget.gameState)),
                     );
                   },
-                  icon: const Icon(Icons.emoji_events),
-                  label: const Text('Achievements'),
+                  icon: const Icon(Icons.emoji_events, color: Colors.white),
+                  label: const Text('Achievements',
+                      style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
                     padding: const EdgeInsets.symmetric(vertical: 15),
