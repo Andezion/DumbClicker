@@ -45,6 +45,7 @@ class _ShopScreenState extends State<ShopScreen> {
               '💰 You received 1000 tokens (exchangeable limit).');
           break;
         case PurchaseService.removeAdsId:
+          widget.gameState.hasRemovedAds = true;
           _showSuccessDialog('🚫 Ads disabled!');
           break;
         case PurchaseService.skinGoldLaptopId:
