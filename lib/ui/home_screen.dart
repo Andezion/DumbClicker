@@ -11,6 +11,7 @@ import '../service/save_service.dart';
 import 'achievements_screen.dart';
 import '../service/motivation_service.dart';
 import '../service/event_service.dart';
+import '../service/ad_service.dart';
 import '../widgets/study_room.dart';
 import '../widgets/motivation_bar.dart';
 import '../widgets/upgrade_card.dart';
@@ -415,15 +416,43 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: const Text('Cancel'),
           ),
           ElevatedButton.icon(
-            onPressed: () {
-              MotivationService.restoreMotivation(gameState, 20);
-              setState(() {});
-              SaveService.saveGame(gameState);
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('+20% Motivation!')),
-              );
-            },
+            onPressed: AdService.isAdReady()
+                ? () async {
+                    Navigator.pop(context);
+
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+
+                    final success = await AdService.showRewardedAd();
+
+                    Navigator.pop(context);
+
+                    if (success) {
+                      MotivationService.restoreMotivation(gameState, 20);
+                      setState(() {});
+                      SaveService.saveGame(gameState);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('+20% Motivation!'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content:
+                              Text('Ad not available. Try again in a moment.'),
+                          backgroundColor: Colors.orange,
+                        ),
+                      );
+                    }
+                  }
+                : null,
             icon: const Icon(Icons.play_arrow),
             label: const Text('Ad'),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
