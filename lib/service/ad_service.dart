@@ -1,26 +1,99 @@
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 class AdService {
   static bool _isInitialized = false;
+  static RewardedAd? _rewardedAd;
+  static bool _isAdLoading = false;
+
+  // Android: ca-app-pub-3940256099942544/5224354917
+  // iOS: ca-app-pub-3940256099942544/1712485313
+  static const String _rewardedAdUnitId =
+      'ca-app-pub-3940256099942544/5224354917';
 
   static Future<void> initialize() async {
-    // TODO: Initialize AdMob
-    // MobileAds.instance.initialize();
-    _isInitialized = true;
+    try {
+      await MobileAds.instance.initialize();
+      _isInitialized = true;
+      await _loadRewardedAd();
+    } catch (e) {
+      print('AdMob initialization error: $e');
+      _isInitialized = false;
+    }
+  }
+
+  static Future<void> _loadRewardedAd() async {
+    if (_isAdLoading || _rewardedAd != null) return;
+
+    _isAdLoading = true;
+
+    await RewardedAd.load(
+      adUnitId: _rewardedAdUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          print('Rewarded ad loaded');
+          _rewardedAd = ad;
+          _isAdLoading = false;
+
+          _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              ad.dispose();
+              _rewardedAd = null;
+              _loadRewardedAd();
+            },
+            onAdFailedToShowFullScreenContent: (ad, error) {
+              print('Failed to show rewarded ad: $error');
+              ad.dispose();
+              _rewardedAd = null;
+              _loadRewardedAd();
+            },
+          );
+        },
+        onAdFailedToLoad: (error) {
+          print('Failed to load rewarded ad: $error');
+          _rewardedAd = null;
+          _isAdLoading = false;
+        },
+      ),
+    );
   }
 
   static Future<bool> showRewardedAd() async {
     if (!_isInitialized) {
+      print('AdMob not initialized');
       return false;
     }
 
-    // TODO: Show rewarded ad
-    // RewardedAd.load(...)
+    if (_rewardedAd == null) {
+      print('Rewarded ad not ready');
+      await _loadRewardedAd();
+      return false;
+    }
 
-    await Future.delayed(const Duration(seconds: 1));
-    return true;
+    bool rewardEarned = false;
+
+    _rewardedAd!.setImmersiveMode(true);
+
+    try {
+      await _rewardedAd!.show(
+        onUserEarnedReward: (ad, reward) {
+          print('User earned reward: ${reward.amount} ${reward.type}');
+          rewardEarned = true;
+        },
+      );
+      return rewardEarned;
+    } catch (e) {
+      print('Error showing rewarded ad: $e');
+      return false;
+    }
   }
 
   static bool isAdReady() {
-    // TODO: Check if ad is loaded
-    return _isInitialized;
+    return _isInitialized && _rewardedAd != null;
+  }
+
+  static void dispose() {
+    _rewardedAd?.dispose();
+    _rewardedAd = null;
   }
 }
