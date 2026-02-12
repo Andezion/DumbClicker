@@ -16,6 +16,7 @@ class GameState {
   int battlePassLevel;
   int battlePassXP;
   bool isPremiumBattlePass;
+  bool hasRemovedAds;
   List<String> unlockedSkins;
   String currentSkin;
   DateTime? lastEventTime;
@@ -54,6 +55,7 @@ class GameState {
     this.battlePassLevel = 0,
     this.battlePassXP = 0,
     this.isPremiumBattlePass = false,
+    this.hasRemovedAds = false,
     List<String>? unlockedSkins,
     this.currentSkin = 'default',
     this.lastEventTime,
@@ -127,6 +129,7 @@ class GameState {
         'battlePassLevel': battlePassLevel,
         'battlePassXP': battlePassXP,
         'isPremiumBattlePass': isPremiumBattlePass,
+        'hasRemovedAds': hasRemovedAds,
         'unlockedSkins': unlockedSkins,
         'currentSkin': currentSkin,
         'lastEventTime': lastEventTime?.toIso8601String(),
@@ -178,6 +181,7 @@ class GameState {
       battlePassLevel: json['battlePassLevel'] ?? 0,
       battlePassXP: json['battlePassXP'] ?? 0,
       isPremiumBattlePass: json['isPremiumBattlePass'] ?? false,
+      hasRemovedAds: json['hasRemovedAds'] ?? false,
       unlockedSkins: List<String>.from(json['unlockedSkins'] ?? ['default']),
       currentSkin: json['currentSkin'] ?? 'default',
       lastEventTime: json['lastEventTime'] != null
