@@ -3,6 +3,7 @@ import '../service/purchase_service.dart';
 import '../model/game_state.dart';
 import '../service/save_service.dart';
 import 'achievements_screen.dart';
+import 'payment_screen.dart';
 
 class ShopScreen extends StatefulWidget {
   final GameState gameState;
@@ -97,30 +98,22 @@ class _ShopScreenState extends State<ShopScreen> {
     );
   }
 
-  Future<void> _buyProduct(String productId, bool isConsumable) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    bool success;
-    if (isConsumable) {
-      success = await PurchaseService.buyConsumable(productId);
-    } else {
-      success = await PurchaseService.buyProduct(productId);
-    }
-
-    setState(() {
-      isLoading = false;
-    });
-
-    if (!success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Purchase error. Please try again.'),
-          backgroundColor: Colors.red,
+  Future<void> _buyProduct(String productId, bool isConsumable, String title,
+      String description, String emoji, String price) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentScreen(
+          productTitle: title,
+          productDescription: description,
+          price: price,
+          emoji: emoji,
+          onPaymentSuccess: () {
+            _handlePurchaseSuccess(productId);
+          },
         ),
-      );
-    }
+      ),
+    );
   }
 
   void _showExchangeDialog() {
@@ -423,7 +416,8 @@ class _ShopScreenState extends State<ShopScreen> {
             )
           else
             ElevatedButton(
-              onPressed: () => _buyProduct(productId, isConsumable),
+              onPressed: () => _buyProduct(
+                  productId, isConsumable, title, description, emoji, price),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber,
                 minimumSize: const Size(double.infinity, 50),
