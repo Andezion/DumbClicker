@@ -34,7 +34,7 @@ class Upgrade {
       Upgrade(
         id: 'laptop',
         name: 'New Laptop',
-        description: '+0.1 ECTS per click',
+        description: '+0.1 tokens per click',
         emoji: '💻',
         basePrice: 25,
         effect: '+0.1/click',
@@ -44,7 +44,7 @@ class Upgrade {
       Upgrade(
         id: 'coffee',
         name: 'Coffee for the Night',
-        description: '+0.05 ECTS per click',
+        description: '+0.05 tokens per click',
         emoji: '☕',
         basePrice: 60,
         effect: '+0.05/click',
@@ -54,7 +54,7 @@ class Upgrade {
       Upgrade(
         id: 'friend',
         name: 'Friend (auto click)',
-        description: '+0.5 ECTS per second',
+        description: '+0.5 tokens per second',
         emoji: '👥',
         basePrice: 150,
         effect: '+0.5/sec',
@@ -64,7 +64,7 @@ class Upgrade {
       Upgrade(
         id: 'tutor',
         name: 'Private Tutor',
-        description: '+2 ECTS per second',
+        description: '+2 tokens per second',
         emoji: '🧑‍🏫',
         basePrice: 500,
         effect: '+2/sec',
@@ -84,7 +84,7 @@ class Upgrade {
       Upgrade(
         id: 'dissertation',
         name: 'Master\'s Thesis',
-        description: '+5 ECTS per second',
+        description: '+5 tokens per second',
         emoji: '📄',
         basePrice: 2500,
         effect: '+5/sec',
@@ -94,7 +94,7 @@ class Upgrade {
       Upgrade(
         id: 'scientificArticle',
         name: 'Scientific Article',
-        description: '+0.5 ECTS per click',
+        description: '+0.5 tokens per click',
         emoji: '📰',
         basePrice: 2000,
         effect: '+0.5/click',
@@ -114,7 +114,7 @@ class Upgrade {
       Upgrade(
         id: 'grant',
         name: 'Research Grant',
-        description: '+10 ECTS per second',
+        description: '+10 tokens per second',
         emoji: '💰',
         basePrice: 12000,
         effect: '+10/sec',
@@ -124,7 +124,7 @@ class Upgrade {
       Upgrade(
         id: 'laboratory',
         name: 'Own Laboratory',
-        description: '+1 ECTS per click',
+        description: '+1 tokens per click',
         emoji: '🔬',
         basePrice: 10000,
         effect: '+1/click',
