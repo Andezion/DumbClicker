@@ -225,15 +225,15 @@ co zmusza gracza do aktywnego zarządzania motywacją raz na ~2–3 godziny — 
 
 ### Kryteria grywalności
 
-| Kryterium                          | Obliczenie                             | Wynik    |
-|------------------------------------|----------------------------------------|----------|
-| Pierwszy znaczący wynik            | ≤ 34 min (1 semestr)                   | ✅       |
-| Postęp offline                     | do 28 800 sek / sesja                  | ✅       |
-| Battle Pass (cel dodatkowy)        | ≈ 70 min aktywnego klikania            | ✅       |
-| Pełne przejście (bez trybu endless)| ≈ 5–6 godz. aktywnie / ~2 tyg. kalend. | ✅       |
-| Balans trudności                   | Wzrost liniowy + multiplikatywny       | ✅       |
-| Ograniczenie monotonii             | Motywacja + zdarzenia (co 60 sek)      | ✅       |
-| Powtarzalność                      | Prestige + tryb endless Profesor       | ✅       |
+| Kryterium                          | Obliczenie                             |
+|------------------------------------|----------------------------------------|
+| Pierwszy znaczący wynik            | ≤ 34 min (1 semestr)                   |
+| Postęp offline                     | do 28 800 sek / sesja                  |
+| Battle Pass (cel dodatkowy)        | ≈ 70 min aktywnego klikania            |
+| Pełne przejście (bez trybu endless)| ≈ 5–6 godz. aktywnie / ~2 tyg. kalend. |
+| Balans trudności                   | Wzrost liniowy + multiplikatywny       |
+| Ograniczenie monotonii             | Motywacja + zdarzenia (co 60 sek)      |
+| Powtarzalność                      | Prestige + tryb endless Profesor       |
 
 ### Formuła cyklu rozgrywki
 
