@@ -46,11 +46,11 @@ Cena(L) = cenaBazowa × 1,15 × (L + 1)
 | Kawa              | 60          | 69 tok    | 138 tok   | 207 tok   | +0,05 tok/klik |
 | Znajomy           | 150         | 173 tok   | 345 tok   | 518 tok   | +0,5 tok/sek   |
 | Korepetytor       | 500         | 575 tok   | 1150 tok  | 1725 tok  | +2,0 tok/sek   |
-| Wczesne zaliczenie| 1200        | 1380 tok  | -         | —         | ×1,1 wszystko  |
-| Praca magisterska | 2500        | 2875 tok  | -         | —         | +5,0 tok/sek   |
-| Konferencja       | 5000        | 5750 tok  | -         | —         | ×1,2 wszystko  |
-| Grant badawczy    | 12000       | 13800 tok | -         | —         | +10,0 tok/sek  |
-| Wydawnictwo       | 25000       | 28750 tok | -         | —         | ×1,3 wszystko  |
+| Wczesne zaliczenie| 1200        | 1380 tok  | -         | -         | ×1,1 wszystko  |
+| Praca magisterska | 2500        | 2875 tok  | -         | -         | +5,0 tok/sek   |
+| Konferencja       | 5000        | 5750 tok  | -         | -         | ×1,2 wszystko  |
+| Grant badawczy    | 12000       | 13800 tok | -         | -         | +10,0 tok/sek  |
+| Wydawnictwo       | 25000       | 28750 tok | -         | -         | ×1,3 wszystko  |
 
 ### 2.3 System motywacji
 
