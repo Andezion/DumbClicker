@@ -17,7 +17,7 @@
 Kurs rośnie z każdym semestrem według formuły z kodu (`getTokensPerEcts()`):
 
 ```
-Rate(sem) = 100 × 1,1^(sem − 1)
+Rate(sem) = 100 × 1,1 ^ (sem − 1)
 ```
 
 | Semestr | Tokenów za 1 ECTS |
@@ -30,7 +30,7 @@ Rate(sem) = 100 × 1,1^(sem − 1)
 | 11      | 259               |
 | 15      | 380               |
 
-Wzrost wykładniczy zapewnia, że gra staje się trudniejsza w miarę postępu, ale jednocześnie gracz zdobywa silniejsze ulepszenia — zachowany jest balans trudności.
+Wzrost wykładniczy zapewnia, że gra staje się trudniejsza w miarę postępu, ale jednocześnie gracz zdobywa silniejsze ulepszenia - zachowany jest balans trudności.
 
 ### 2.2 Ceny ulepszeń
 
@@ -46,11 +46,11 @@ Cena(L) = cenaBazowa × 1,15 × (L + 1)
 | Kawa              | 60          | 69 tok    | 138 tok   | 207 tok   | +0,05 tok/klik |
 | Znajomy           | 150         | 173 tok   | 345 tok   | 518 tok   | +0,5 tok/sek   |
 | Korepetytor       | 500         | 575 tok   | 1150 tok  | 1725 tok  | +2,0 tok/sek   |
-| Wczesne zaliczenie| 1200        | 1380 tok  | —         | —         | ×1,1 wszystko  |
-| Praca magisterska | 2500        | 2875 tok  | —         | —         | +5,0 tok/sek   |
-| Konferencja       | 5000        | 5750 tok  | —         | —         | ×1,2 wszystko  |
-| Grant badawczy    | 12000       | 13800 tok | —         | —         | +10,0 tok/sek  |
-| Wydawnictwo       | 25000       | 28750 tok | —         | —         | ×1,3 wszystko  |
+| Wczesne zaliczenie| 1200        | 1380 tok  | -         | —         | ×1,1 wszystko  |
+| Praca magisterska | 2500        | 2875 tok  | -         | —         | +5,0 tok/sek   |
+| Konferencja       | 5000        | 5750 tok  | -         | —         | ×1,2 wszystko  |
+| Grant badawczy    | 12000       | 13800 tok | -         | —         | +10,0 tok/sek  |
+| Wydawnictwo       | 25000       | 28750 tok | -         | —         | ×1,3 wszystko  |
 
 ### 2.3 System motywacji
 
